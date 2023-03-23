@@ -20,7 +20,7 @@ pipeline {
         stage('Crear rama') {
             steps {
                 script {
-                    def response = sh returnStatus: true, script: "curl -u ${params.GITHUB_USERNAME}:${params.GITHUB_TOKEN} https://api.github.com/repos/${params.GITHUB_USERNAME}/${params.REPO_NAME}/git/refs -d '{\"ref\":\"refs/heads/${params.BRANCH}\",\"sha\":\"$(curl -s -u ${params.GITHUB_USERNAME}:${params.GITHUB_TOKEN} https://api.github.com/repos/${params.GITHUB_USERNAME}/${params.REPO_NAME}/git/refs/heads/main | jq -r '.object.sha')\"}'"
+                    def response = sh returnStatus: true, script: "curl -u ${params.GITHUB_USERNAME}:${params.GITHUB_TOKEN} https://api.github.com/repos/${params.GITHUB_USERNAME}/${params.REPO_NAME}/git/refs -d '{\"ref\":\"refs/heads/\${params.BRANCH}\",\"sha\":\"$(curl -s -u ${params.GITHUB_USERNAME}:${params.GITHUB_TOKEN} https://api.github.com/repos/${params.GITHUB_USERNAME}/${params.REPO_NAME}/git/refs/heads/main | jq -r '.object.sha')\"}'"
                     if (response != 200) {
                         error "No se pudo crear la rama ${params.BRANCH}. El status code fue ${response}."
                     }
