@@ -1,4 +1,3 @@
-# -*- coding: <encoding name> -*-
 import argparse
 
 from utils import rename_main_branch, create_new_branch
