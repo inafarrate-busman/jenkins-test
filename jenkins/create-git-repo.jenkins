@@ -16,9 +16,9 @@ pipeline {
 
         stage('Crear ramas (Compañia)') {
             steps {
-                if(params.IS_COMPANY){
+                if (params.IS_COMPANY) {
                     sh 'python3 github/create-git-branches.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH} --org'
-                }else {
+                } else {
                     sh 'python3 github/create-git-branches.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
                 }
             }
