@@ -15,19 +15,12 @@ pipeline {
         }
 
         stage('Crear ramas (Compañia)') {
-            when {
-                expression { params.IS_COMPANY == true }
-            }
             steps {
-                sh 'python3 github/create-git-branches.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
-            }
-        }
-        stage('Crear ramas (Usuario)') {
-            when {
-                expression { params.IS_COMPANY == false }
-            }
-            steps {
-                sh 'python3 github/create-git-branches.py -t ${GITHUB_TOKEN} -u ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
+                if(params.IS_COMPANY){
+                    sh 'python3 github/create-git-branches.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH} --org'
+                }else {
+                    sh 'python3 github/create-git-branches.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
+                }
             }
         }
     }
