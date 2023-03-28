@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Merge dev branch') {
             steps {
-                sh 'python3 github/merge-git-branch.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME}' -v ${BRANCH}
+                sh 'python3 github/merge-git-branch.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME}' -v ${BRANCH}'
             }
         }
     }
