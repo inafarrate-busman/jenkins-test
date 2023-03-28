@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Crear repositorio') {
             steps {
-                sh 'python github/create-git-repo -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME}'
+                sh 'python github/create-git-repo.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME}'
             }
         }
 
@@ -19,7 +19,7 @@ pipeline {
                 expression { params.IS_COMPANY == true }
             }
             steps {
-                sh 'python github/create-git-branches -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
+                sh 'python github/create-git-branches.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
             }
         }
         stage('Crear ramas (Usuario)') {
@@ -27,7 +27,7 @@ pipeline {
                 expression { params.IS_COMPANY == false }
             }
             steps {
-                sh 'python github/create-git-branches -t ${GITHUB_TOKEN} -u ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
+                sh 'python github/create-git-branches.py -t ${GITHUB_TOKEN} -u ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
             }
         }
     }
