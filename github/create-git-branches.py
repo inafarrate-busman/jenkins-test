@@ -1,6 +1,6 @@
 import argparse
 
-from utils import rename_main_branch, create_new_branch
+from utils import rename_main_branch, create_new_branch, check_brach_name, get_dev_branch
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-t", "--token", help="Token de GitHub API")
@@ -19,5 +19,7 @@ if not token or not module or not owner or not version:
 
 branch_sha = rename_main_branch(token, module, owner, version)
 
-dev_branch = f"{version}_dev"
+check_brach_name(version)
+dev_branch = get_dev_branch(version)
+
 create_new_branch(token, module, owner, dev_branch, branch_sha)

@@ -1,0 +1,16 @@
+pipeline {
+    parameters {
+        string(name: 'GITHUB_USERNAME', description: 'Nombre de usuario de GitHub')
+        password(name: 'GITHUB_TOKEN', description: 'Token de acceso personal de GitHub')
+        string(name: 'REPO_NAME', description: 'Nombre del repositorio a crear')
+        string(name: 'BRANCH', defaultValue: '10.0', description: 'Nombre de la rama a crear en el repositorio')
+    }
+    agent any
+    stages {
+        stage('Merge dev branch') {
+            steps {
+                sh 'python3 github/merge-git-branch.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME}' -v ${BRANCH}
+            }
+        }
+    }
+}

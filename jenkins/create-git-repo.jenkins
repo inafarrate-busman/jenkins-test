@@ -14,7 +14,7 @@ pipeline {
             }
         }
 
-        stage('Crear ramas (Compañia)') {
+        stage('Crear ramas') {
             steps {
                 script {
                     if (params.IS_COMPANY) {
