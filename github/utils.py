@@ -3,11 +3,10 @@ import json
 
 GITHUB_BASE_URL = "https://api.github.com"
 
-def create_repo(token, module, owner):
-
-    url = "%(base_url)s/orgs/%(owner)s/repos" % {
+def create_repo(token, module, owner, is_org = True):
+    url = "%(base_url)s/%(user_uri)s/repos" % {
         'base_url': GITHUB_BASE_URL,
-        'owner': owner
+        'user_uri': f'org/{owner}' if is_org else 'user',
     }
 
     headers = {
@@ -26,4 +25,4 @@ def create_repo(token, module, owner):
 
     status_code = response.status_code
     if status_code != 200:
-        raise Exception(f"Status code: {status_code}. Context: {response.text}")
+        raise Exception(f"Status code: {status_code}. Url: {url}. Context: {response.text}")
