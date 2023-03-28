@@ -14,13 +14,20 @@ pipeline {
             }
         }
 
-        stage('Crear ramas') {
+        stage('Crear ramas (Compañia)') {
+            when {
+                expression { params.IS_COMPANY == true }
+            }
             steps {
-                if (${IS_COMPANY}){
-                    sh 'python github/create-git-branches -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
-                } else {
-                    sh 'python github/create-git-branches -t ${GITHUB_TOKEN} -u ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
-                }
+                sh 'python github/create-git-branches -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
+            }
+        }
+        stage('Crear ramas (Usuario)') {
+            when {
+                expression { params.IS_COMPANY == false }
+            }
+            steps {
+                sh 'python github/create-git-branches -t ${GITHUB_TOKEN} -u ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
             }
         }
     }
