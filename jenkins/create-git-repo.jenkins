@@ -4,6 +4,7 @@ pipeline {
         password(name: 'GITHUB_TOKEN', description: 'Token de acceso personal de GitHub')
         string(name: 'REPO_NAME', description: 'Nombre del repositorio a crear')
         string(name: 'BRANCH', defaultValue: '10.0', description: 'Nombre de la rama a crear en el repositorio')
+        booleanParam(name: 'IS_COMPANY', defaultValue: true, description: '¿Es una compañía?')
     }
     agent any
     stages {
@@ -15,7 +16,11 @@ pipeline {
 
         stage('Crear ramas') {
             steps {
-                sh 'python github/create-git-branches -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
+                if (${IS_COMPANY}){
+                    sh 'python github/create-git-branches -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
+                }else {
+                    sh 'python github/create-git-branches -t ${GITHUB_TOKEN} -u ${GITHUB_USERNAME} -m ${REPO_NAME} -v ${BRANCH}'
+                }
             }
         }
     }
