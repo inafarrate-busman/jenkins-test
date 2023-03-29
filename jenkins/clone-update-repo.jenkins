@@ -13,11 +13,13 @@ pipeline {
             steps {
                 script {
                     if(fileExists("${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME}")){
-                        dir("${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME}")
-                        sh 'git pull'
+                        dir("${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME}") {
+                            sh 'git pull'
+                        }
                     }else {
-                        dir("${ADDONS_DEVELOPMENT_PATH}")
-                        sh 'git clone --branch ${BRANCH} git@github.com:busmanapps/${REPO_NAME}'
+                        dir("${ADDONS_DEVELOPMENT_PATH}") {
+                            sh 'git clone --branch ${BRANCH} git@github.com:busmanapps/${REPO_NAME}'
+                        }
                     }
                 }
             }
