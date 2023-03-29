@@ -1,0 +1,26 @@
+pipeline {
+    parameters {
+        string(name: 'SERVER_NAME', description: 'Nombre del servidor')
+        password(name: 'ADDONS_DEVELOPMENT_PATH', description: 'Ruta absoluta de addons_development del entorno')
+        string(name: 'REPO_NAME', description: 'Nombre del módulo')
+        string(name: 'BRANCH', description: 'Rama/Versión del módulo')
+    }
+    agent {
+        label params.SERVER_NAME
+    }
+    stages {
+        stage('Clone Update module') {
+            steps {
+                script {
+                    if(fileExists("${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME}")){
+                        dir("${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME}")
+                        sh 'git pull'
+                    }else {
+                        dir("${ADDONS_DEVELOPMENT_PATH}")
+                        sh 'git clone --branch ${BRANCH} git@github.com:busmanapps/${REPO_NAME}'
+                    }
+                }
+            }
+        }
+    }
+}
