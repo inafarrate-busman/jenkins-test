@@ -1,0 +1,22 @@
+pipeline {
+    parameters {
+        string(name: 'SERVER_NAME', description: 'Nombre del servidor')
+        string(name: 'THIRD_PARTY_ADDONS_PATH', description: 'Ruta absoluta de third party addons del entorno')
+        binaryParam(name: 'ZIP_FILE', description: 'Fichero del módulo (.zip)')
+    }
+    agent any
+    stages {
+        stage('Upload third party addon') {
+            steps {
+                script {
+                    def binaryFile = params.ZIP_FILE
+                    if (binaryFile != null) {
+                        sh 'unzip ${binaryFile} -d ${THIRD_PARTY_ADDONS_PATH}'
+                    }else {
+                        error "Archivo ZIP binario no proporcionado"
+                    }
+                }
+            }
+        }
+    }
+}
