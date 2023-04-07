@@ -1,0 +1,50 @@
+pipeline {
+    parameters {
+        string(name: 'dbName', description: 'Nombre de la base de datos')
+        string(name: 'dbTestName', description: 'Nombre de la base de datos de copia')
+        string(name: 'dbTestUser', description: 'Nombre de usuario de la base de datos')
+        password(name: 'dbTestPass', description: 'Contraseña de la base de datos')
+        string(name: 'pathBackup', description: 'Ruta al directorio de respaldo')
+        string(name: 'pathLog', description: 'Ruta al directorio de logs')
+        string(name: 'dbHost', description: 'IP de la base de datos')
+        string(name: 'pathSqlFile', description: 'Fichero SQL')
+        string(name: 'odooTestServiceName', description: 'Nombre del servicio de pruebas')
+        string(name: 'pathPython', description: 'Ruta al fichero binario de Python')
+        string(name: 'odooTestPath', description: 'Ruta al directorio de Odoo del entorno de pruebas')
+        string(name: 'pathOdooConfig', description: 'Ruta al fichero de configuración de Odoo')
+        string(name: 'modules', description: 'Nombre de los módulos a instalar')
+    }
+  
+    agent {
+        label params.SERVER_NAME
+    }
+
+    stages {
+        stage('Parando servicio') {
+            steps {
+                sh 'systemctl stop ${odooTestServiceName}'
+            }
+        }
+        stage('Restaurando copia') {
+            steps{
+                sh 'bash backup/restAp.sh ${dbName} ${dbTestName} ${dbTestUser} ${dbTestPass} ${pathBackup}'
+            }
+        }
+        stage('Ejecutando sentencias SQL') {
+            steps{
+                sh 'bash backup/sinc.sh ${dbTestName} ${dbTestUser} ${dbTestPass} ${pathLog} ${dbHost} ${pathSqlFile}'
+            }
+        }
+        stage('Instalando módulos adicionales'){
+            steps {
+                sh 'bash backup/ponertest.sh ${pathPython} ${odooTestPath} ${pathOdooConfig} ${dbTestName} ${modules}'
+            }
+        }
+        stage('Iniciando servicio'){
+            steps {
+                sh 'systemctl start ${odooTestServiceName}'
+            }
+        }
+    }
+
+}

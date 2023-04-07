@@ -1,0 +1,37 @@
+pipeline {
+    parameters {
+        string(name: 'pathFilesBackup', description: 'Ruta a los archivos de respaldo')
+        string(name: 'pathBackup', description: 'Ruta al directorio de respaldo')
+        string(name: 'pathFilestore', description: 'Ruta al directorio de almacenamiento de archivos')
+        string(name: 'dbName', description: 'Nombre de la base de datos')
+        string(name: 'dbUser', description: 'Nombre de usuario de la base de datos')
+        password(name: 'dbPass', description: 'Contraseña de la base de datos')
+        string(name: 'pathLog', description: 'Ruta al directorio de logs')
+        string(name: 'pathDailyLog', description: 'Ruta al directorio de logs diarios')
+        string(name: 'pathMuk', description: 'Ruta al directorio de muk')
+    }
+  
+    agent {
+        label params.SERVER_NAME
+    }
+
+    stages {
+        stage('Eliminar backups antiguas') {
+            steps {
+                sh 'bash backup/limbd.sh ${pathBackup}'
+                sh 'bash backup/limpieza.sh ${pathFilestore}'
+            }
+        }
+        stage('Realizar copia') {
+            steps{
+                sh 'bash backup/bk.sh ${dbName} ${dbUser} ${dbPass} ${pathBackup} ${pathLog} ${pathDailyLog}'
+            }
+        }
+        stage('Comprimir archivos'){
+            steps {
+                sh 'bash backup/tarftp.sh ${pathFilesBackup} ${pathBackup} ${pathFilestore} ${pathMuk}'
+            }
+        }
+    }
+
+}
