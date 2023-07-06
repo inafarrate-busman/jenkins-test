@@ -7,7 +7,7 @@ GITHUB_BASE_URL = "https://api.github.com"
 def create_repo(token, module, owner, is_org = True):
     url = "%(base_url)s/%(user_uri)s/repos" % {
         'base_url': GITHUB_BASE_URL,
-        'user_uri': f'org/{owner}' if is_org else 'user',
+        'user_uri': f'orgs/{owner}' if is_org else 'user',
     }
 
     headers = {

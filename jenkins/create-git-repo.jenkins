@@ -8,9 +8,16 @@ pipeline {
     }
     agent any
     stages {
+        
         stage('Crear repositorio') {
             steps {
-                sh 'python3 github/create-git-repo.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME}'
+                script {
+                    if (params.IS_COMPANY) {
+                        sh 'python3 github/create-git-repo.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME} --org'
+                    } else {
+                        sh 'python3 github/create-git-repo.py -t ${GITHUB_TOKEN} -o ${GITHUB_USERNAME} -m ${REPO_NAME}'
+                    }
+                }
             }
         }
 
