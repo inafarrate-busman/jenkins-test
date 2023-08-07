@@ -159,10 +159,10 @@ def changeConfigParams(env){
         db_port: "5432",
         db_user: "${env.dbUser}",
         db_pass: "${env.dbPass}",
-        data_dir: "${env.enviromentPath}/.local"
+        data_dir: "${env.environmentFolder}/.local"
     ]
 
-    def command = "python3 ./config.py"
+    def command = "python3 config.py"
     config.each { key, value ->
         command += " ${key}=${value}"
     }
