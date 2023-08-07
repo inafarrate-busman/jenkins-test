@@ -39,58 +39,58 @@ pipeline {
             }
         }
 
-        stage('Verificar instalación pyenv') {
-            steps {
-                script {
-                    try {
-                        sh 'pyenv --version'
-                    } catch(Exception e) {
-                        echo 'pyenv no está instalado. Instalando...'
-                        sh 'curl https://pyenv.run | bash'
-                    }
-                }
-            }
-        }
+        // stage('Verificar instalación pyenv') {
+        //     steps {
+        //         script {
+        //             try {
+        //                 sh 'pyenv --version'
+        //             } catch(Exception e) {
+        //                 echo 'pyenv no está instalado. Instalando...'
+        //                 sh 'curl https://pyenv.run | bash'
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Crear entornos virtuales') {
-            steps {
-                script {
-                    if (!checkPythonVersion(PYTHON_VERSION)){
-                        sh 'pyenv install ${PYTHON_VERSION}'
-                    }
+        // stage('Crear entornos virtuales') {
+        //     steps {
+        //         script {
+        //             if (!checkPythonVersion(PYTHON_VERSION)){
+        //                 sh 'pyenv install ${PYTHON_VERSION}'
+        //             }
 
-                    def enviromentName = ''
+        //             def enviromentName = ''
 
-                    if (CREAR_TEST) {
-                        enviromentName = '${lowerPartnerName}_pruebas'
-                        createEnviromentIfNotExists(enviromentName)
-                    }
+        //             if (CREAR_TEST) {
+        //                 enviromentName = '${lowerPartnerName}_pruebas'
+        //                 createEnviromentIfNotExists(enviromentName)
+        //             }
 
-                    if (CREAR_PROD) {
-                        enviromentName = "${lowerPartnerName}"
-                        createEnviromentIfNotExists(enviromentName)
-                    }
-                }
-            }
-        }
+        //             if (CREAR_PROD) {
+        //                 enviromentName = "${lowerPartnerName}"
+        //                 createEnviromentIfNotExists(enviromentName)
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Clonar Odoo') {
-            steps {
-                script {
-                    def environmentFolder = ''
+        // stage('Clonar Odoo') {
+        //     steps {
+        //         script {
+        //             def environmentFolder = ''
 
-                    if(CREAR_TEST){
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
-                        cloneLinkOdoo(environmentFolder)
-                    }
+        //             if(CREAR_TEST){
+        //                 environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
+        //                 cloneLinkOdoo(environmentFolder)
+        //             }
 
-                    if(CREAR_PROD){
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
-                        cloneLinkOdoo(environmentFolder)
-                    }
-                }
-            }
-        }
+        //             if(CREAR_PROD){
+        //                 environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
+        //                 cloneLinkOdoo(environmentFolder)
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
 
