@@ -55,7 +55,7 @@ pipeline {
         stage('Crear entornos virtuales') {
             steps {
                 script {
-                    if (!checkPythonVersion(PYTHON_VERSION)){
+                    if (!checkPythonVersion()){
                         sh "${HOME}/.pyenv/bin/pyenv install ${PYTHON_VERSION}"
                     }
 
@@ -102,14 +102,19 @@ def cloneLinkOdoo(String enviromentPath){
     }
 }
 
-def checkPythonVersion(String version) {
-    def versionExists = sh "${HOME}/.pyenv/bin/pyenv versions | grep ${version}"
-    return versionExists
+def checkPythonVersion() {
+    try {
+        def versionExists = sh(returnStdout: true, script: "${HOME}/.pyenv/bin/pyenv versions | grep ${PYTHON_VERSION}")
+        return true
+    }catch(Exception e){
+        return false
+    }
 }
 
 def createEnviromentIfNotExists(String name) {
-    def enviromentExists = sh "${HOME}/.pyenv/bin/pyenv virtualenvs | grep ${name}"
-    if(!environmentExists){
+    try {
+        def enviromentExists = sh(returnStdout: true, script:"${HOME}/.pyenv/bin/pyenv virtualenvs | grep ${name}")   
+    }catch(Exception e){
         sh "${HOME}/.pyenv/bin/pyenv virtualenv ${PYTHON_VERSION} ${name}"
     }
 }
