@@ -14,7 +14,6 @@ pipeline {
         cleanPartnerName = "${PARTNER_NAME.strip().replaceAll(' ', '_').replace(mayorVersion, '')}"
         lowerPartnerName = "${cleanPartnerName.toLowerCase()}"
         upperPartnerName = "${cleanPartnerName.toUpperCase()}"
-        enviroments = []
     }
 
     agent {
@@ -26,6 +25,7 @@ pipeline {
         stage("Inicar valores") {
             steps {
                 script {
+                    def enviroments = []
                     if(CREAR_TEST){
                         enviroments.add([
                             environmentFolder: "${HOME}/${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}",
@@ -39,6 +39,8 @@ pipeline {
                             enviromentName: "${lowerPartnerName}"
                         ])
                     }
+
+                    writeFile file: 'enviroments.json', text: groovy.json.JsonOutput.toJson(enviroments)
                 }
             }
         }
@@ -46,6 +48,7 @@ pipeline {
         stage("Crear directorios") {
             steps {
                 script {
+                    def enviroments = getEnviromentsInfo()
                     enviroments.each {env -> 
                         createFolders(env.environmentFolder)
                     }
@@ -56,6 +59,7 @@ pipeline {
         stage('Clonar Odoo') {
             steps {
                 script {
+                    def enviroments = getEnviromentsInfo()
                     enviroments.each {env -> 
                         cloneLinkOdoo(env.environmentFolder)
                     }
@@ -83,6 +87,7 @@ pipeline {
                         sh "${HOME}/.pyenv/bin/pyenv install ${PYTHON_VERSION}"
                     }
 
+                    def enviroments = getEnviromentsInfo()
                     enviroments.each { env -> 
                         createEnviromentIfNotExists(env.enviromentName, env.environmentFolder)
                     }
@@ -93,6 +98,7 @@ pipeline {
         stage("Instalar requerimientos") {
             steps {
                 script {
+                    def enviroments = getEnviromentsInfo()
                     enviroments.each { env -> 
                         installRequirements(env.environmentFolder)
                     }
@@ -100,6 +106,11 @@ pipeline {
             }
         }
     }
+}
+
+def getEnviromentsInfo(){
+    def enviroments = readJSON file: 'enviroments.json'
+    return enviroments
 }
 
 def installRequirements(String enviromentPath){
