@@ -137,7 +137,40 @@ pipeline {
                 }
             }
         }
+
+        stage("Create services"){
+            steps {
+                script {
+                    enviroments.each { env -> 
+                        createServiceFile(env)
+                    }
+                }
+            }
+        }
     }
+}
+
+def createServiceFile(env) {
+    def servicePath = "${HOME}/${upperPartnerName}"
+    def name = "${env.enviromentName}"
+    def serviceName = "odoo-${env.enviromentName}"
+    def templateContents = libraryResource('odoo/odoo.service.template')
+    def serviceContents = templateContents.replaceAll('\\$\\{name\\}', name)
+                                          .replaceAll('\\$\\{version\\}', mayorVersion)
+                                          .replaceAll('\\$\\{user\\}', USER)
+                                          .replaceAll('\\$\\{command\\}', "${enviromentPath}/.venv/bin/python3 ${enviromentPath}/server/odoo-bin -c ${enviromentPath}/config/odoo-server.conf")
+    
+    def tempServiceFile = File.createTempFile("${serviceName}", '.service')
+    tempServiceFile.text = serviceContents
+    sh "cp ${tempServiceFile} ${servicePath}/${serviceName}.service"
+    sh "sudo chmod 644  ${servicePath}/${serviceName}.service"
+    sh "sudo chown ${USER}:${USER}  ${servicePath}/${serviceName}.service"
+
+    sh "sudo ln -sf ${servicePath}/${serviceName}.service /etc/systemd/system/${serviceName}.service"
+    sh "sudo systemctl daemon-reload"
+    sh "sudo systemctl enable ${serviceName}"
+    sh "sudo systemctl start ${serviceName}"
+
 }
 
 def createDbUser(String user, String pass){
@@ -176,18 +209,6 @@ def changeConfigParams(env){
     }
 
     sh command
-}
-
-def computeAddonsPath(String enviromentPath){
-
-
-
-    def paths = [
-        "${enviromentPath}/server/odoo/addons",
-        "${enviromentPath}/server/addons",
-        "${enviromentPath}/addons/third_party_addons",
-        "${enviromentPath}/addons/addons_development"
-    ]
 }
 
 def getEnviromentsInfo(){

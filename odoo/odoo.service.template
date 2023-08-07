@@ -1,0 +1,18 @@
+[Unit]  
+Description=${name}_v${version} 
+Requires=postgresql.service  
+After=network.target postgresql.service  
+  
+[Service]  
+Type=simple  
+SyslogIdentifier=${name}_v${version}   
+PermissionsStartOnly=true  
+User= ${user}
+Group= ${user}
+PIDFile=/run/odoo/${name}_v${version}.pid  
+ExecStartPre=/usr/bin/install -d -m755 -o ${user} -g ${user}  /run/odoo  
+ExecStart=${command}
+StandardOutput=journal+console
+
+[Install]  
+WantedBy=multi-user.target  
