@@ -1,0 +1,25 @@
+pipeline {
+    agent {
+        label params.SERVER_NAME
+    }
+
+    stages {
+        stage('Reinicio del servicio') {
+            steps {
+                script {
+                    // Verificar si se proporcionó un nombre de servicio
+                    if (params.SERVICE_NAME == '') {
+                        error("Debe proporcionar el nombre del servicio.")
+                    }
+                    
+                    // Reiniciar el servicio utilizando sudo con la contraseña proporcionada
+                    try {
+                        sh "echo ${params.SUDO_PASSWORD} | sudo -S service ${params.SERVICE_NAME} ${params.ACTION}"
+                    } catch (Exception e) {
+                        error("Error al reiniciar el servicio: ${e.message}")
+                    }
+                }
+            }
+        }
+    }
+}
