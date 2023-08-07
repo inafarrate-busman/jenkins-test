@@ -7,6 +7,7 @@ pipeline {
         booleanParam(name: 'CREAR_PROD', defaultValue: false, description: 'Crear carpetas de producción')
         string(name: 'PYTHON_VERSION', description: 'Versión de Python')
         string(name: 'ODOO_PATH', description: 'Path de Odoo del servidor')
+        string(name: 'HTTP_PORT', description: 'Puerto HTTP de Odoo de producción (Pruebas será 100 más)')
     }
 
     environment {
@@ -127,6 +128,7 @@ pipeline {
                     def enviroments = getEnviromentsInfo()
                     enviroments.each { env -> 
                         createConfigFile(env.environmentFolder)
+                        changeConfigParams(env)
                     }
                 }
             }
@@ -145,6 +147,27 @@ def createDbUser(String user, String pass){
 
 def createConfigFile(String enviromentPath){
     sh "${enviromentPath}/.venv/bin/python3 ${enviromentPath}/server/odoo-bin -s -c ${enviromentPath}/config/odoo-server.conf --stop-after-init"
+    sh "chown ${USER}:${USER} ${enviromentPath}/config/odoo-server.conf"
+    sh "chmod 660 ${enviromentPath}/config/odoo-server.conf"
+}
+
+def changeConfigParams(env){
+    def config = [
+        "http_port": "${HTTP_PORT}",
+        "gevent_port": "${HTTP_PORT.toInteger() + 3}"
+        "db_host": "127.0.0.1",
+        "db_port": "5432",
+        "db_user": "${env.dbUser}",
+        "db_pass": "${env.dbPass}",
+        "data_dir": "${env.enviromentPath}/.local"
+    ]
+
+    def command = "python3 ./config.py"
+    config.each { key, value ->
+        command += " ${key}=${value}"
+    }
+
+    sh command
 }
 
 def getEnviromentsInfo(){
