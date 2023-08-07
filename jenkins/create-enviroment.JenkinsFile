@@ -180,7 +180,7 @@ def checkPythonVersion() {
 
 def createEnviromentIfNotExists(String name, String folder) {
     try {
-        def enviromentExists = sh(returnStdout: true, script:"${HOME}/.pyenv/bin/pyenv virtualenvs | grep ${name}")   
+        def enviromentExists = sh(returnStdout: true, script:"${HOME}/.pyenv/bin/pyenv virtualenvs | grep -w ${name}")   
     }catch(Exception e){
         sh "${HOME}/.pyenv/bin/pyenv virtualenv ${PYTHON_VERSION} ${name}"
     }
