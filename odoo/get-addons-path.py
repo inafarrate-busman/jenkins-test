@@ -29,7 +29,7 @@ def main():
         f"{input_path}/addons/addons_development",
     ]
 
-    print(", ".join(addons_path))
+    print(",".join(addons_path))
     return 0
     
 
