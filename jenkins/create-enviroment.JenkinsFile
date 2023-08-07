@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh 'pyenv --version'
+                        sh '${HOME}/.pyenv/bin/pyenv --version'
                     } catch(Exception e) {
                         echo 'pyenv no está instalado. Instalando...'
                         sh 'curl https://pyenv.run | bash'
@@ -56,7 +56,7 @@ pipeline {
             steps {
                 script {
                     if (!checkPythonVersion(PYTHON_VERSION)){
-                        sh "pyenv install ${PYTHON_VERSION}"
+                        sh "${HOME}/.pyenv/bin/pyenv install ${PYTHON_VERSION}"
                     }
 
                     def enviromentName = ''
@@ -103,14 +103,14 @@ def cloneLinkOdoo(String enviromentPath){
 }
 
 def checkPythonVersion(String version) {
-    def versionExists = sh "pyenv versions | grep ${version}"
+    def versionExists = sh "${HOME}/.pyenv/bin/pyenv versions | grep ${version}"
     return versionExists
 }
 
 def createEnviromentIfNotExists(String name) {
-    def enviromentExists = sh "pyenv virtualenvs | grep ${name}"
+    def enviromentExists = sh "${HOME}/.pyenv/bin/pyenv virtualenvs | grep ${name}"
     if(!environmentExists){
-        sh "pyenv virtualenv ${PYTHON_VERSION} ${name}"
+        sh "${HOME}/.pyenv/bin/pyenv virtualenv ${PYTHON_VERSION} ${name}"
     }
 }
 
