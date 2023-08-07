@@ -24,7 +24,7 @@ pipeline {
         stage("Crear directorios") {
             steps {
                 script {
-                    def environmentFolder = ''
+                    String environmentFolder = ''
 
                     if(CREAR_TEST){
                         environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
@@ -39,85 +39,86 @@ pipeline {
             }
         }
 
-        // stage('Verificar instalación pyenv') {
-        //     steps {
-        //         script {
-        //             try {
-        //                 sh 'pyenv --version'
-        //             } catch(Exception e) {
-        //                 echo 'pyenv no está instalado. Instalando...'
-        //                 sh 'curl https://pyenv.run | bash'
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Verificar instalación pyenv') {
+            steps {
+                script {
+                    try {
+                        sh 'pyenv --version'
+                    } catch(Exception e) {
+                        echo 'pyenv no está instalado. Instalando...'
+                        sh 'curl https://pyenv.run | bash'
+                    }
+                }
+            }
+        }
 
-        // stage('Crear entornos virtuales') {
-        //     steps {
-        //         script {
-        //             if (!checkPythonVersion(PYTHON_VERSION)){
-        //                 sh 'pyenv install ${PYTHON_VERSION}'
-        //             }
+        stage('Crear entornos virtuales') {
+            steps {
+                script {
+                    if (!checkPythonVersion(PYTHON_VERSION)){
+                        sh "pyenv install ${PYTHON_VERSION}"
+                    }
 
-        //             def enviromentName = ''
+                    def enviromentName = ''
 
-        //             if (CREAR_TEST) {
-        //                 enviromentName = '${lowerPartnerName}_pruebas'
-        //                 createEnviromentIfNotExists(enviromentName)
-        //             }
+                    if (CREAR_TEST) {
+                        enviromentName = "${lowerPartnerName}_pruebas"
+                        createEnviromentIfNotExists(enviromentName)
+                    }
 
-        //             if (CREAR_PROD) {
-        //                 enviromentName = "${lowerPartnerName}"
-        //                 createEnviromentIfNotExists(enviromentName)
-        //             }
-        //         }
-        //     }
-        // }
+                    if (CREAR_PROD) {
+                        enviromentName = "${lowerPartnerName}"
+                        createEnviromentIfNotExists(enviromentName)
+                    }
+                }
+            }
+        }
 
-        // stage('Clonar Odoo') {
-        //     steps {
-        //         script {
-        //             def environmentFolder = ''
+        stage('Clonar Odoo') {
+            steps {
+                script {
+                    def environmentFolder = ''
 
-        //             if(CREAR_TEST){
-        //                 environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
-        //                 cloneLinkOdoo(environmentFolder)
-        //             }
+                    if(CREAR_TEST){
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
+                        cloneLinkOdoo(environmentFolder)
+                    }
 
-        //             if(CREAR_PROD){
-        //                 environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
-        //                 cloneLinkOdoo(environmentFolder)
-        //             }
-        //         }
-        //     }
-        // }
+                    if(CREAR_PROD){
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
+                        cloneLinkOdoo(environmentFolder)
+                    }
+                }
+            }
+        }
     }
 }
 
-def cloneLinkOdoo(enviromentPath){
+def cloneLinkOdoo(String enviromentPath){
     if (ODOO_PATH) {
-        sh 'ln -s ${ODOO_PATH} ${enviromentPath}/server'
+        sh "ln -s ${ODOO_PATH} ${enviromentPath}/server"
     }else {
-        sh 'git clone --branch ${VERSION} --depth 1 https://github.com/odoo/odoo ${enviromentPath}/server'
+        sh "git clone --branch ${VERSION} --depth 1 https://github.com/odoo/odoo ${enviromentPath}/server"
     }
 }
 
-def checkPythonVersion(version) {
+def checkPythonVersion(String version) {
     def versionExists = sh "pyenv versions | grep ${version}"
     return versionExists
 }
 
-def createEnviromentIfNotExists(name) {
-    def enviromentExists = sh 'pyenv virtualenvs | grep ${name}'
+def createEnviromentIfNotExists(String name) {
+    def enviromentExists = sh "pyenv virtualenvs | grep ${name}"
     if(!environmentExists){
-        sh 'pyenv virtualenv ${PYTHON_VERSION} ${name}'
+        sh "pyenv virtualenv ${PYTHON_VERSION} ${name}"
     }
 }
 
-def createFolders(enviromentFolder) {
+def createFolders(String enviromentFolder) {
     def odooFolders = ['addons/addons_development', 'addons/oca', 'addons/third_party_addons', 'config', 'requirements', 'logs']
+    String folderName = ''
     odooFolders.each { folder -> 
-        def folderName = "${environmentFolder}/${folder}"
-        sh 'mkdir -p ${folderName}'
+        folderName = "${enviromentFolder}/${folder}"
+        sh "mkdir -p ${folderName}"
     }
 }
