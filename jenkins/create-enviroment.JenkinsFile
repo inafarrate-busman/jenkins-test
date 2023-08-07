@@ -29,6 +29,7 @@ pipeline {
                     def enviroments = []
                     if(CREAR_TEST){
                         enviroments.add([
+                            folderName: "odoo_${mayorVersion}_pruebas_${lowerPartnerName}",
                             environmentFolder: "${HOME}/${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}",
                             enviromentName: "${lowerPartnerName}_pruebas",
                             dbUser: "${lowerPartnerName}_pruebas",
@@ -40,6 +41,7 @@ pipeline {
 
                     if(CREAR_PROD){
                         enviroments.add([
+                            folderName: "odoo_${mayorVersion}_${lowerPartnerName}",
                             environmentFolder: "${HOME}/${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}",
                             enviromentName: "${lowerPartnerName}",
                             dbUser: "${lowerPartnerName}",
@@ -208,10 +210,10 @@ def changeConfigParams(env){
         db_port: "5432",
         db_user: "${env.dbUser}",
         db_password: "${env.dbPass}",
-        data_dir: "${HOME}/${upperPartnerName}/.local",
+        data_dir: "${HOME}/${upperPartnerName}/.local/share/${env.folderName}",
         db_filter: "./*",
         proxy_mode: "True",
-        logfile: "${env.environmentFolder}/logs"
+        logfile: "${env.environmentFolder}/logs/odoo-log.log"
     ]
 
     def command = "python3 odoo/config.py ${env.environmentFolder}/config/odoo-server.conf"
