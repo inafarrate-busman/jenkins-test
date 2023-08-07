@@ -1,9 +1,10 @@
 pipeline {
     parameters {
+        string(name: 'SERVER_NAME', description: 'Nombre del servidor')
         string(name: 'PARTNER_NAME', description: 'Nombre del cliente')
         string(name: 'VERSION', description: 'Versión en formato XX.X')
-        booleanParam(name: 'CREAR_TEST', defaultValue: false, description: 'Crear carpetas de ambiente de pruebas')
-        booleanParam(name: 'CREAR_PROD', defaultValue: false, description: 'Crear carpetas de ambiente de producción')
+        booleanParam(name: 'CREAR_TEST', defaultValue: false, description: 'Crear carpetas de pruebas')
+        booleanParam(name: 'CREAR_PROD', defaultValue: false, description: 'Crear carpetas de producción')
         string(name: 'PYTHON_VERSION', description: 'Versión de Python')
         string(name: 'ODOO_PATH', description: 'Path de Odoo del servidor')
     }
