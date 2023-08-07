@@ -192,6 +192,6 @@ def createFolders(String enviromentFolder) {
     String folderName = ''
     odooFolders.each { folder -> 
         folderName = "${enviromentFolder}/${folder}"
-        sh "mkdir -p ${folderName}"
+        sh "sudo -u ${USER} mkdir -p ${folderName}"
     }
 }
