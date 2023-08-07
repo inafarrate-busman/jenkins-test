@@ -96,7 +96,7 @@ pipeline {
 
 def cloneLinkOdoo(String enviromentPath){
     if (ODOO_PATH) {
-        sh "ln -s ${ODOO_PATH} ${enviromentPath}/server"
+        sh "ln -fs ${ODOO_PATH} ${enviromentPath}/server"
     }else {
         sh "git clone --branch ${VERSION} --depth 1 https://github.com/odoo/odoo ${enviromentPath}/server"
     }
