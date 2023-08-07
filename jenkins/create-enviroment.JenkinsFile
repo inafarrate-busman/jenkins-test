@@ -163,7 +163,7 @@ def createServiceFile(env) {
     
     def tempServiceFile = File.createTempFile("${serviceName}", '.service')
     writeFile  file: "${tempServiceFile}", text: "${templateContents}"
-    sh "cp ${tempServiceFile} ${servicePath}/${serviceName}.service"
+    sh "sudo cp ${tempServiceFile} ${servicePath}/${serviceName}.service"
     sh "sudo chmod 644  ${servicePath}/${serviceName}.service"
     sh "sudo chown ${USER}:${USER}  ${servicePath}/${serviceName}.service"
 
