@@ -105,7 +105,22 @@ pipeline {
                 }
             }
         }
+
+        stage("Generate config file") {
+            steps {
+                script {
+                    def enviroments = getEnviromentsInfo()
+                    enviroments.each { env -> 
+                        createConfigFile(env.environmentFolder)
+                    }
+                }
+            }
+        }
     }
+}
+
+def createConfigFile(String enviromentPath){
+    sh "${enviromentPath}/.venv/bin/python3 ${enviromentPath}/server/odoo-bin -s -c ${enviromentPath}/config/odoo-server.conf --stop-after-init"
 }
 
 def getEnviromentsInfo(){
