@@ -162,7 +162,7 @@ def changeConfigParams(env){
         data_dir: "${env.environmentFolder}/.local"
     ]
 
-    def command = "python3 config.py"
+    def command = "python3 odoo/config.py"
     config.each { key, value ->
         command += " ${key}=${value}"
     }
