@@ -1,0 +1,121 @@
+pipeline {
+    parameters {
+        string(name: 'PARTNER_NAME', description: 'Nombre del cliente')
+        string(name: 'VERSION', description: 'Versión en formato XX.X')
+        booleanParam(name: 'CREAR_TEST', defaultValue: false, description: 'Crear carpetas de ambiente de pruebas')
+        booleanParam(name: 'CREAR_PROD', defaultValue: false, description: 'Crear carpetas de ambiente de producción')
+        string(name: 'PYTHON_VERSION', description: 'Versión de Python')
+        string(name: 'ODOO_PATH', description: 'Path de Odoo del servidor')
+    }
+
+    environment {
+        mayorVersion = "${VERSION.split('\\.')[0]}"
+        cleanPartnerName = "${PARTNER_NAME.strip().replaceAll(' ', '_').replace(mayorVersion, '')}"
+        lowerPartnerName = "${cleanPartnerName.toLowerCase()}"
+        upperPartnerName = "${cleanPartnerName.toUpperCase()}"
+    }
+
+    agent {
+        label params.SERVER_NAME
+    }
+
+    stages {
+        stage("Crear directorios") {
+            steps {
+                script {
+                    def environmentFolder = ''
+
+                    if(CREAR_TEST){
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
+                        createFolders(environmentFolder)
+                    }
+
+                    if(CREAR_PROD){
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
+                        createFolders(environmentFolder)
+                    }
+                }
+            }
+        }
+
+        stage('Verificar instalación pyenv') {
+            steps {
+                script {
+                    try {
+                        sh 'pyenv --version'
+                    } catch() {
+                        echo 'pyenv no está instalado. Instalando...'
+                        sh 'curl https://pyenv.run | bash'
+                    }
+                }
+            }
+        }
+
+        stage('Crear entornos virtuales') {
+            steps {
+                script {
+                    if (!checkPythonVersion(PYTHON_VERSION)){
+                        sh 'pyenv install ${PYTHON_VERSION}'
+                    }
+
+                    def enviromentName = ''
+
+                    if (CREAR_TEST) {
+                        enviromentName = '${lowerPartnerName}_pruebas'
+                        createEnviromentIfNotExists(enviromentName)
+                    }
+
+                    if (CREAR_PROD) {
+                        enviromentName = "${lowerPartnerName}"
+                        createEnviromentIfNotExists(enviromentName)
+                    }
+                }
+            }
+        }
+
+        stage('Clonar Odoo') {
+            steps {
+                script {
+                    def environmentFolder = ''
+
+                    if(CREAR_TEST){
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
+                        cloneLinkOdoo(environmentFolder)
+                    }
+
+                    if(CREAR_PROD){
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
+                        cloneLinkOdoo(environmentFolder)
+                    }
+                }
+            }
+        }
+    }
+}
+
+def cloneLinkOdoo(enviromentPath){
+    if (ODOO_PATH) {
+        sh 'ln -s ${ODOO_PATH} ${enviromentPath}/server'
+    }else {
+        sh 'git clone --branch ${VERSION} --depth 1 https://github.com/odoo/odoo ${enviromentPath}/server'
+    }
+}
+
+def checkPythonVersion(version) {
+    return sh "pyenv versions | grep ${version}"
+}
+
+def createEnviromentIfNotExists(name) {
+    def enviromentExists = sh 'pyenv virtualenvs | grep ${name}'
+    if(!environmentExists){
+        sh 'pyenv virtualenv ${PYTHON_VERSION} ${name}'
+    }
+}
+
+def createFolders(enviromentFolder) {
+    def odooFolders = ['addons/addons_development', 'addons/oca', 'addons/third_party_addons', 'config', 'requirements', 'logs']
+    odooFolders.each { folder -> 
+        def folderName = "${environmentFolder}/${folder}"
+        sh 'mkdir -p ${folderName}'
+    }
+}
