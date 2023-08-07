@@ -39,6 +39,24 @@ pipeline {
             }
         }
 
+        stage('Clonar Odoo') {
+            steps {
+                script {
+                    def environmentFolder = ''
+
+                    if(CREAR_TEST){
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
+                        cloneLinkOdoo(environmentFolder)
+                    }
+
+                    if(CREAR_PROD){
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
+                        cloneLinkOdoo(environmentFolder)
+                    }
+                }
+            }
+        }
+
         stage('Verificar instalación pyenv') {
             steps {
                 script {
@@ -69,24 +87,6 @@ pipeline {
                     if (CREAR_PROD) {
                         enviromentName = "${lowerPartnerName}"
                         createEnviromentIfNotExists(enviromentName)
-                    }
-                }
-            }
-        }
-
-        stage('Clonar Odoo') {
-            steps {
-                script {
-                    def environmentFolder = ''
-
-                    if(CREAR_TEST){
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
-                        cloneLinkOdoo(environmentFolder)
-                    }
-
-                    if(CREAR_PROD){
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
-                        cloneLinkOdoo(environmentFolder)
                     }
                 }
             }
