@@ -155,14 +155,14 @@ def createServiceFile(env) {
     def servicePath = "${HOME}/${upperPartnerName}"
     def name = "${env.enviromentName}"
     def serviceName = "odoo-${env.enviromentName}"
-    def templateContents = libraryResource('odoo/odoo.service.template')
+    def templateContents = readFile 'odoo/odoo.service.template'
     def serviceContents = templateContents.replaceAll('\\$\\{name\\}', name)
                                           .replaceAll('\\$\\{version\\}', mayorVersion)
                                           .replaceAll('\\$\\{user\\}', USER)
-                                          .replaceAll('\\$\\{command\\}', "${enviromentPath}/.venv/bin/python3 ${enviromentPath}/server/odoo-bin -c ${enviromentPath}/config/odoo-server.conf")
+                                          .replaceAll('\\$\\{command\\}', "${env.environmentFolder}/.venv/bin/python3 ${env.environmentFolder}/server/odoo-bin -c ${env.environmentFolder}/config/odoo-server.conf")
     
     def tempServiceFile = File.createTempFile("${serviceName}", '.service')
-    tempServiceFile.text = serviceContents
+    writeFile  file: "${tempServiceFile}", text: "${templateContents}"
     sh "cp ${tempServiceFile} ${servicePath}/${serviceName}.service"
     sh "sudo chmod 644  ${servicePath}/${serviceName}.service"
     sh "sudo chown ${USER}:${USER}  ${servicePath}/${serviceName}.service"
