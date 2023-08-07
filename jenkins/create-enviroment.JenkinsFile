@@ -156,14 +156,18 @@ def createConfigFile(String enviromentPath){
 }
 
 def changeConfigParams(env){
+    def addonsPath = sh(returnStdout: true, script: "python3 odoo/get-addons-path.py")
     def config = [
+        addons_path: "${addonsPath}",
         http_port: "${env.http_port}",
         gevent_port: "${env.gevent_port}",
         db_host: "127.0.0.1",
         db_port: "5432",
         db_user: "${env.dbUser}",
-        db_pass: "${env.dbPass}",
-        data_dir: "${env.environmentFolder}/.local"
+        db_password: "${env.dbPass}",
+        data_dir: "${env.environmentFolder}/.local",
+        db_filter: "./*",
+        proxy_mode: "True",
     ]
 
     def command = "python3 odoo/config.py ${env.environmentFolder}/config/odoo-server.conf"
@@ -172,6 +176,18 @@ def changeConfigParams(env){
     }
 
     sh command
+}
+
+def computeAddonsPath(String enviromentPath){
+
+
+
+    def paths = [
+        "${enviromentPath}/server/odoo/addons",
+        "${enviromentPath}/server/addons",
+        "${enviromentPath}/addons/third_party_addons",
+        "${enviromentPath}/addons/addons_development"
+    ]
 }
 
 def getEnviromentsInfo(){
