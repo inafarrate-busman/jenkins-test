@@ -147,7 +147,7 @@ def createDbUser(String user, String pass){
 
 def createConfigFile(String enviromentPath){
     sh "${enviromentPath}/.venv/bin/python3 ${enviromentPath}/server/odoo-bin -s -c ${enviromentPath}/config/odoo-server.conf --stop-after-init"
-    sh "chmod 660 ${enviromentPath}/config/odoo-server.conf"
+    sh "sudo chmod 660 ${enviromentPath}/config/odoo-server.conf"
     sh "sudo chown ${USER}:${USER} ${enviromentPath}/config/odoo-server.conf"
 }
 
