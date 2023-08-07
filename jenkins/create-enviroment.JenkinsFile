@@ -7,7 +7,6 @@ pipeline {
         booleanParam(name: 'CREAR_PROD', defaultValue: false, description: 'Crear carpetas de producción')
         string(name: 'PYTHON_VERSION', description: 'Versión de Python')
         string(name: 'ODOO_PATH', description: 'Path de Odoo del servidor')
-        string(name: 'SUDO_PASSWORD', description: 'Contraseña sudo')
     }
 
     environment {
@@ -137,8 +136,8 @@ pipeline {
 
 def createDbUser(String user, String pass){
     def userExists = sh(script: "sudo -u postgres psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='${user}'\"", returnStatus: true)
-    if (usuarioExiste != 0) {
-        sh "echo ${SUDO_PASSWORD} | sudo -S -u postgres psql -c \"CREATE USER ${usuario} WITH PASSWORD '${contrasena}' NOCREATEROLE;\""
+    if (userExists != 0) {
+        sh "sudo -u postgres psql -c \"CREATE USER ${usuario} WITH PASSWORD '${contrasena}' NOCREATEROLE;\""
     } else {
         echo "El usuario '${usuario}' ya existe. No se creará nuevamente."
     }
