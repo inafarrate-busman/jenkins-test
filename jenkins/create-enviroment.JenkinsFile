@@ -99,15 +99,14 @@ pipeline {
             steps {
                 script {
                     def environmentFolder = ''
-                    def enviromentName = ''
 
                     if (CREAR_TEST) {
                         environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
-                        installRequirements(enviromentName, environmentFolder)
+                        installRequirements(environmentFolder)
                     }
                     if (CREAR_PROD) {
                         environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
-                        installRequirements(enviromentName, environmentFolder)
+                        installRequirements(environmentFolder)
                     }
                 }
             }
