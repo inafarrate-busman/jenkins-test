@@ -43,7 +43,7 @@ pipeline {
                 script {
                     try {
                         sh 'pyenv --version'
-                    } catch() {
+                    } catch(Exception e) {
                         echo 'pyenv no está instalado. Instalando...'
                         sh 'curl https://pyenv.run | bash'
                     }
