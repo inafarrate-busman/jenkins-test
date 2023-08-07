@@ -154,7 +154,7 @@ def createConfigFile(String enviromentPath){
 def changeConfigParams(env){
     def config = [
         http_port: "${HTTP_PORT}",
-        gevent_port: "${HTTP_PORT.toInteger() + 3}"
+        gevent_port: "${HTTP_PORT.toInteger() + 3}",
         db_host: "127.0.0.1",
         db_port: "5432",
         db_user: "${env.dbUser}",
