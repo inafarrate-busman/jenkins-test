@@ -103,12 +103,10 @@ pipeline {
 
                     if (CREAR_TEST) {
                         environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
-                        enviromentName = "${lowerPartnerName}"
                         installRequirements(enviromentName, environmentFolder)
                     }
                     if (CREAR_PROD) {
                         environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
-                        enviromentName = "${lowerPartnerName}_pruebas"
                         installRequirements(enviromentName, environmentFolder)
                     }
                 }
@@ -117,12 +115,10 @@ pipeline {
     }
 }
 
-def installRequirements(String enviromentName, String enviromentPath){
-    sh "${HOME}/.pyenv/bin/pyenv activate ${enviromentName}"
-    sh "pip3 install --upgrade pip"
-    sh "pip3 install wheel"
-    sh "pip3 install -r ${enviromentPath}/requirements/requirements.txt"
-    sh "deactivate"
+def installRequirements(String enviromentPath){
+    sh "${enviromentPath}/.venv/bin/pip3 install --upgrade pip"
+    sh "${enviromentPath}/.venv/bin/pip3 install wheel"
+    sh "${enviromentPath}/.venv/bin/pip3 install -r ${enviromentPath}/requirements/requirements.txt"
 }
 
 def cloneLinkOdoo(String enviromentPath){
