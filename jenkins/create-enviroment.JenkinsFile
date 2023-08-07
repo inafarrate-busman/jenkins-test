@@ -32,7 +32,9 @@ pipeline {
                             environmentFolder: "${HOME}/${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}",
                             enviromentName: "${lowerPartnerName}_pruebas",
                             dbUser: "${lowerPartnerName}_pruebas",
-                            dbPass: "${lowerPartnerName}_v${mayorVersion}"
+                            dbPass: "${lowerPartnerName}_v${mayorVersion}",
+                            http_port: "${HTTP_PORT.toInteger() + 100}",
+                            gevent_port: "${HTTP_PORT.toInteger() + 100 + 3}"
                         ])
                     }
 
@@ -41,7 +43,9 @@ pipeline {
                             environmentFolder: "${HOME}/${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}",
                             enviromentName: "${lowerPartnerName}",
                             dbUser: "${lowerPartnerName}",
-                            dbPass: "${lowerPartnerName}_v${mayorVersion}"
+                            dbPass: "${lowerPartnerName}_v${mayorVersion}",
+                            http_port: "${HTTP_PORT.toInteger()}",
+                            gevent_port: "${HTTP_PORT.toInteger() + 3}"
                         ])
                     }
 
@@ -153,8 +157,8 @@ def createConfigFile(String enviromentPath){
 
 def changeConfigParams(env){
     def config = [
-        http_port: "${HTTP_PORT}",
-        gevent_port: "${HTTP_PORT.toInteger() + 3}",
+        http_port: "${env.http_port}",
+        gevent_port: "${env.gevent_port}",
         db_host: "127.0.0.1",
         db_port: "5432",
         db_user: "${env.dbUser}",
@@ -162,7 +166,7 @@ def changeConfigParams(env){
         data_dir: "${env.environmentFolder}/.local"
     ]
 
-    def command = "python3 odoo/config.py"
+    def command = "python3 odoo/config.py ${env.environmentFolder}/config/odoo-server.conf"
     config.each { key, value ->
         command += " ${key}=${value}"
     }
