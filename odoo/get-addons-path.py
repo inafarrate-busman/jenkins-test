@@ -15,16 +15,17 @@ def main():
     args = parser.parse_args()
 
     input_path = args.path
-    if not os.path.exists(input_path):
+    oca_path = f"{input_path}/addons/oca"
+    if not os.path.exists(oca_path):
         print("The path does not exist.")
         return
     
 
-    oca_path = get_subdirectories(input_path)
+    oca_addons_paths = get_subdirectories(oca_path)
     addons_path = [
         f"{input_path}/server/odoo/addons",
         f"{input_path}/server/addons",
-        *oca_path,
+        *oca_addons_paths,
         f"{input_path}/addons/third_party_addons",
         f"{input_path}/addons/addons_development",
     ]
