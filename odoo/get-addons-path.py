@@ -17,7 +17,6 @@ def main():
     input_path = args.path
     oca_path = f"{input_path}/addons/oca"
     if not os.path.exists(oca_path):
-        print("The path does not exist.")
         return
     
 

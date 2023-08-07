@@ -141,6 +141,7 @@ pipeline {
         stage("Create services"){
             steps {
                 script {
+                    def enviroments = getEnviromentsInfo()
                     enviroments.each { env -> 
                         createServiceFile(env)
                     }
@@ -191,7 +192,7 @@ def createConfigFile(String enviromentPath){
 def changeConfigParams(env){
     def addonsPath = sh(returnStdout: true, script: "python3 odoo/get-addons-path.py ${env.environmentFolder}")
     def config = [
-        addons_path: "${addonsPath}",
+        addons_path: "${addonsPath.replace('\n', '')}",
         http_port: "${env.http_port}",
         gevent_port: "${env.gevent_port}",
         db_host: "127.0.0.1",
