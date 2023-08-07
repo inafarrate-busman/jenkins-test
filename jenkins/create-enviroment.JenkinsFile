@@ -14,26 +14,40 @@ pipeline {
         cleanPartnerName = "${PARTNER_NAME.strip().replaceAll(' ', '_').replace(mayorVersion, '')}"
         lowerPartnerName = "${cleanPartnerName.toLowerCase()}"
         upperPartnerName = "${cleanPartnerName.toUpperCase()}"
+        enviroments = []
     }
 
     agent {
         label params.SERVER_NAME
     }
 
+
     stages {
-        stage("Crear directorios") {
+        stage("Inicar valores") {
             steps {
                 script {
-                    String environmentFolder = ''
-
                     if(CREAR_TEST){
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
-                        createFolders(environmentFolder)
+                        enviroments.add([
+                            environmentFolder: "${HOME}/${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}",
+                            enviromentName: "${lowerPartnerName}_pruebas"
+                        ])
                     }
 
                     if(CREAR_PROD){
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
-                        createFolders(environmentFolder)
+                        enviroments.add([
+                            environmentFolder: "${HOME}/${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}",
+                            enviromentName: "${lowerPartnerName}"
+                        ])
+                    }
+                }
+            }
+        }
+
+        stage("Crear directorios") {
+            steps {
+                script {
+                    enviroments.each {env -> 
+                        createFolders(env.environmentFolder)
                     }
                 }
             }
@@ -42,16 +56,8 @@ pipeline {
         stage('Clonar Odoo') {
             steps {
                 script {
-                    def environmentFolder = ''
-
-                    if(CREAR_TEST){
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
-                        cloneLinkOdoo(environmentFolder)
-                    }
-
-                    if(CREAR_PROD){
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
-                        cloneLinkOdoo(environmentFolder)
+                    enviroments.each {env -> 
+                        cloneLinkOdoo(env.environmentFolder)
                     }
                 }
             }
@@ -77,19 +83,8 @@ pipeline {
                         sh "${HOME}/.pyenv/bin/pyenv install ${PYTHON_VERSION}"
                     }
 
-                    def enviromentName = ''
-                    def environmentFolder = ''
-
-                    if (CREAR_TEST) {
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
-                        enviromentName = "${lowerPartnerName}_pruebas"
-                        createEnviromentIfNotExists(enviromentName, environmentFolder)
-                    }
-
-                    if (CREAR_PROD) {
-                        enviromentName = "${lowerPartnerName}"
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
-                        createEnviromentIfNotExists(enviromentName, environmentFolder)
+                    enviroments.each { env -> 
+                        createEnviromentIfNotExists(env.enviromentName, env.environmentFolder)
                     }
                 }
             }
@@ -98,15 +93,8 @@ pipeline {
         stage("Instalar requerimientos") {
             steps {
                 script {
-                    def environmentFolder = ''
-
-                    if (CREAR_TEST) {
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
-                        installRequirements(environmentFolder)
-                    }
-                    if (CREAR_PROD) {
-                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
-                        installRequirements(environmentFolder)
+                    enviroments.each { env -> 
+                        installRequirements(env.environmentFolder)
                     }
                 }
             }
