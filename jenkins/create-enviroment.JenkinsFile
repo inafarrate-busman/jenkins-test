@@ -136,15 +136,12 @@ pipeline {
 }
 
 def createDbUser(String user, String pass){
-    sh 'cd /home'
     def userExists = sh(script: "echo ${SUDO_PASSWORD} | sudo -S -u postgres psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='${user}'\"", returnStatus: true)
     if (usuarioExiste != 0) {
         sh "echo ${SUDO_PASSWORD} | sudo -S -u postgres psql -c \"CREATE USER ${usuario} WITH PASSWORD '${contrasena}' NOCREATEROLE;\""
     } else {
         echo "El usuario '${usuario}' ya existe. No se creará nuevamente."
     }
-
-    sh 'cd -'
 }
 
 def createConfigFile(String enviromentPath){
