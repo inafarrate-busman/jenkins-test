@@ -162,7 +162,7 @@ def createServiceFile(env) {
                                           .replaceAll('\\$\\{command\\}', "${env.environmentFolder}/.venv/bin/python3 ${env.environmentFolder}/server/odoo-bin -c ${env.environmentFolder}/config/odoo-server.conf")
     
     def tempServiceFile = File.createTempFile("${serviceName}", '.service')
-    writeFile  file: "${tempServiceFile}", text: "${templateContents}"
+    writeFile  file: "${tempServiceFile}", text: "${serviceContents}"
     sh "sudo cp ${tempServiceFile} ${servicePath}/${serviceName}.service"
     sh "sudo chmod 644  ${servicePath}/${serviceName}.service"
     sh "sudo chown ${USER}:${USER}  ${servicePath}/${serviceName}.service"
