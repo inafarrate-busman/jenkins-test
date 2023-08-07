@@ -135,8 +135,8 @@ pipeline {
 }
 
 def createDbUser(String user, String pass){
-    def userExists = sh(script: "sudo -u postgres psql -tAc \"SELECT 1 FROM pg_roles WHERE rolname='${user}'\"", returnStatus: true)
-    if (userExists != 0) {
+    def userExists = sh(returnStdout: true, script: "sudo -u postgres psql -tAc \"SELECT COALESCE(COUNT(*), 0) FROM pg_roles WHERE rolname='${user}'\"").trim()
+    if(userExists.toInteger() == 0){
         sh "sudo -u postgres psql -c \"CREATE USER ${user} WITH PASSWORD '${pass}' NOCREATEROLE;\""
     } else {
         echo "El usuario '${user}' ya existe. No se creará nuevamente."
