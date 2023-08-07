@@ -102,7 +102,8 @@ def cloneLinkOdoo(enviromentPath){
 }
 
 def checkPythonVersion(version) {
-    return sh "pyenv versions | grep ${version}"
+    def versionExists = sh "pyenv versions | grep ${version}"
+    return versionExists
 }
 
 def createEnviromentIfNotExists(name) {
