@@ -148,6 +148,15 @@ pipeline {
                 }
             }
         }
+
+        stage("Ultimos retoques") {
+            steps {
+                script {
+                    sh "sudo chown -R ${USER}:${USER} ${HOME}/${upperPartnerName}"
+                    sh "rm enviroments.json"
+                }
+            }
+        }
     }
 }
 
