@@ -199,9 +199,10 @@ def changeConfigParams(env){
         db_port: "5432",
         db_user: "${env.dbUser}",
         db_password: "${env.dbPass}",
-        data_dir: "${env.environmentFolder}/.local",
+        data_dir: "${HOME}/${upperPartnerName}/.local",
         db_filter: "./*",
         proxy_mode: "True",
+        logfile: "${env.environmentFolder}/logs"
     ]
 
     def command = "python3 odoo/config.py ${env.environmentFolder}/config/odoo-server.conf"
