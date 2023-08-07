@@ -78,20 +78,51 @@ pipeline {
                     }
 
                     def enviromentName = ''
+                    def environmentFolder = ''
 
                     if (CREAR_TEST) {
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
                         enviromentName = "${lowerPartnerName}_pruebas"
-                        createEnviromentIfNotExists(enviromentName)
+                        createEnviromentIfNotExists(enviromentName, environmentFolder)
                     }
 
                     if (CREAR_PROD) {
                         enviromentName = "${lowerPartnerName}"
-                        createEnviromentIfNotExists(enviromentName)
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
+                        createEnviromentIfNotExists(enviromentName, environmentFolder)
+                    }
+                }
+            }
+        }
+
+        stage("Instalar requerimientos") {
+            steps {
+                script {
+                    def environmentFolder = ''
+                    def enviromentName = ''
+
+                    if (CREAR_TEST) {
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_pruebas_${lowerPartnerName}"
+                        enviromentName = "${lowerPartnerName}"
+                        installRequirements(enviromentName, environmentFolder)
+                    }
+                    if (CREAR_PROD) {
+                        environmentFolder = "${upperPartnerName}/odoo_${mayorVersion}_${lowerPartnerName}"
+                        enviromentName = "${lowerPartnerName}_pruebas"
+                        installRequirements(enviromentName, environmentFolder)
                     }
                 }
             }
         }
     }
+}
+
+def installRequirements(String enviromentName, String enviromentPath){
+    sh "${HOME}/.pyenv/bin/pyenv activate ${enviromentName}"
+    sh "pip3 install --upgrade pip"
+    sh "pip3 install wheel"
+    sh "pip3 install -r ${enviromentPath}/requirements/requirements.txt"
+    sh "deactivate"
 }
 
 def cloneLinkOdoo(String enviromentPath){
@@ -100,6 +131,8 @@ def cloneLinkOdoo(String enviromentPath){
     }else {
         sh "git clone --branch ${VERSION} --depth 1 https://github.com/odoo/odoo ${enviromentPath}/server"
     }
+
+    sh "ln -fs ${enviromentPath}/server/requirements.txt ${enviromentPath}/requirements/"
 }
 
 def checkPythonVersion() {
@@ -111,12 +144,14 @@ def checkPythonVersion() {
     }
 }
 
-def createEnviromentIfNotExists(String name) {
+def createEnviromentIfNotExists(String name, String folder) {
     try {
         def enviromentExists = sh(returnStdout: true, script:"${HOME}/.pyenv/bin/pyenv virtualenvs | grep ${name}")   
     }catch(Exception e){
         sh "${HOME}/.pyenv/bin/pyenv virtualenv ${PYTHON_VERSION} ${name}"
     }
+
+    sh "ln -sf ${HOME}/.pyenv/versions/${name} ${folder}/.venv"
 }
 
 def createFolders(String enviromentFolder) {
