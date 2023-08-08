@@ -42,7 +42,7 @@ pipeline {
                         }
                     }
 
-                    sh "sudo chown ${USER}:${USER} ${sourcePath}/${repoName}"
+                    sh "sudo chown -R ${USER}:${USER} ${sourcePath}/${repoName}"
                 }
             }
 
@@ -76,7 +76,7 @@ pipeline {
                 dir("${destPath}"){
                     sh "tar -xzf ${repoName}.tgz"
                     sh "rm ${repoName}.tgz"
-                    sh "sudo chown ${USER}:${USER} ${repoName}"
+                    sh "sudo chown -R ${USER}:${USER} ${repoName}"
                 }
             }
         }
@@ -94,6 +94,7 @@ pipeline {
                     }
 
                     sh 'ln -s ${PROD_OCA_PATH}/${repoName} ${TEST_OCA_PATH}/'
+                    sh "sudo chown -R ${USER}:${USER} ${TEST_OCA_PATH}/${repoName}"
                 }
             }
         }
