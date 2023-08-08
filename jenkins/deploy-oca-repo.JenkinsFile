@@ -17,16 +17,34 @@ pipeline {
     
     environment {
         repoName = params.URL.tokenize('/').last().replaceAll('.git', '')
+        fromDesa = params.DESA_NODE != '' && params.DESA_OCA_PATH != ''
     }
 
     stages {
-        stage("Stash DESA module"){
+        stage("Copying from DESA"){
             when {
-                expression { params.DESA_NODE != '' && params.DESA_OCA_PATH != '' }
+                expression { fromDesa == true }
+            }
+
+            agent {
+                label params.DESA_NODE
             }
 
             steps {
-                echo "${repoName}"
+                dir("${DESA_OCA_PATH}/${repoName}") {
+                    stash name: "${repoName}"
+                }
+            }
+        }
+
+        stage ("Paste to Node") {
+            when {
+                expression { fromDesa == true }
+            }
+
+            sh "mkdir -p ${repoName}"
+            dir("${repoName}"){
+                unstash name: "${repoName}"
             }
         }
     }
