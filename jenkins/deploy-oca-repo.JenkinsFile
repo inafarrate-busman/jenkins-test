@@ -1,0 +1,33 @@
+pipeline {
+    
+    parameters {
+        booleanParam(name: 'IS_TEST', defaultValue: false, description: 'Entorno de pruebas')
+        stringParam(name: 'URL', defaultValue: '', description: 'URL Git del repositorio')
+        stringParam(name: 'TEST_OCA_PATH', defaultValue: '', description: 'Path de pruebas del los módulos de OCA')
+        stringParam(name: 'VERSION', defaultValue: '', description: 'Versión del repositorio')
+        stringParam(name: 'PROD_OCA_PATH', defaultValue: '', description: 'Path de producción del los módulos de OCA')
+        stringParam(name: 'DESA_NODE', defaultValue: '', description: 'Nombre del nodo del servidor DESA')
+        stringParam(name: 'DESA_OCA_PATH', defaultValue: '', description: 'Path de DESA del los módulos de OCA')
+        booleanParam(name: 'UPDATE_REPO', defaultValue: false, description: 'Actualizar repositorio')
+    }
+
+    agent {
+        label params.SERVER_NAME
+    }
+    
+    environment {
+        repoName = params.URL.tokenize('/').last().replaceAll('.git', '')
+    }
+
+    stages {
+        stage("Stash DESA module"){
+            when {
+                expression { params.DESA_NODE != '' && params.DESA_OCA_PATH != '' }
+            }
+
+            steps {
+                echo "${repoName}"
+            }
+        }
+    }
+}
