@@ -71,16 +71,18 @@ pipeline {
                 expression { fromDesa == 'true' }
             }
             steps {
-                unstash "${repoName}"
-                sh "mv ${repoName}.tgz ${destPath}"
-                def exists = fileExists "${destPath}/${repoName}"
-                if( exists ) {
-                    sh "rm -rf ${destPath}/${repoName}"
-                }
-                dir("${destPath}"){
-                    sh "tar -xzf ${repoName}.tgz"
-                    sh "rm ${repoName}.tgz"
-                    sh "sudo chown -R ${USER}:${USER} ${repoName}"
+                script {
+                    unstash "${repoName}"
+                    sh "mv ${repoName}.tgz ${destPath}"
+                    def exists = fileExists "${destPath}/${repoName}"
+                    if( exists ) {
+                        sh "rm -rf ${destPath}/${repoName}"
+                    }
+                    dir("${destPath}"){
+                        sh "tar -xzf ${repoName}.tgz"
+                        sh "rm ${repoName}.tgz"
+                        sh "sudo chown -R ${USER}:${USER} ${repoName}"
+                    }
                 }
             }
         }
