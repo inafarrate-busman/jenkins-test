@@ -18,7 +18,7 @@ pipeline {
     
     environment {
         repoName = params.URL.tokenize('/').last().replaceAll('.git', '')
-        fromDesa = params.DESA_NODE != '' && params.DESA_OCA_PATH != ''
+        fromDesa = (params.DESA_NODE != '' && params.DESA_OCA_PATH != '')
     }
 
     stages {
