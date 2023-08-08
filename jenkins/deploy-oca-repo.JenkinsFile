@@ -26,7 +26,7 @@ pipeline {
 
         stage("Cloning / Updating repo") {
             when {
-                expression { UPDATE_REPO == true }
+                expression { params.UPDATE_REPO == true }
             }
             steps {
                 script {
@@ -41,6 +41,8 @@ pipeline {
                             sh 'git pull'
                         }
                     }
+
+                    sh "sudo chown ${USER}:${USER} ${sourcePath}/${repoName}"
                 }
             }
 
@@ -81,7 +83,7 @@ pipeline {
 
         stage ("Crear enlace a pruebas") {
             when {
-                expression { IS_TEST == false && TEST_OCA_PATH != '' && PROD_OCA_PATH != '' }
+                expression { params.IS_TEST == false && params.TEST_OCA_PATH != '' && params.PROD_OCA_PATH != '' }
             }
 
             steps {
