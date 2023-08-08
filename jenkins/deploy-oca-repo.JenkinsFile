@@ -18,13 +18,13 @@ pipeline {
     
     environment {
         repoName = params.URL.tokenize('/').last().replaceAll('.git', '')
-        fromDesa = (params.DESA_NODE != '' && params.DESA_OCA_PATH != '')
+        fromDesa = "${params.DESA_NODE != '' && params.DESA_OCA_PATH != ''}"
     }
 
     stages {
         stage("Copying from DESA"){
             when {
-                expression { fromDesa == true }
+                expression { fromDesa }
             }
 
             agent {
@@ -40,12 +40,13 @@ pipeline {
 
         stage ("Paste to Node") {
             when {
-                expression { fromDesa == true }
+                expression { fromDesa }
             }
-
-            sh "mkdir -p ${repoName}"
-            dir("${repoName}"){
-                unstash name: "${repoName}"
+            steps {
+                sh "mkdir -p ${repoName}"
+                dir("${repoName}"){
+                    unstash name: "${repoName}"
+                }
             }
         }
     }
