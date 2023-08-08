@@ -76,7 +76,7 @@ pipeline {
                     sh "mv ${repoName}.tgz ${destPath}"
                     def exists = fileExists "${destPath}/${repoName}"
                     if( exists ) {
-                        sh "rm -rf ${destPath}/${repoName}"
+                        sh "sudo -u ${USER} rm -rf ${destPath}/${repoName}"
                     }
                     dir("${destPath}"){
                         sh "tar -xzf ${repoName}.tgz"
@@ -96,7 +96,7 @@ pipeline {
                 script {
                     def exists = fileExists "${TEST_OCA_PATH}/${repoName}"
                     if(exists){
-                        sh 'rm -rf ${TEST_OCA_PATH}/${repoName}'
+                        sh 'sudo -u ${USER} rm -rf ${TEST_OCA_PATH}/${repoName}'
                     }
 
                     sh 'ln -s ${PROD_OCA_PATH}/${repoName} ${TEST_OCA_PATH}/'
