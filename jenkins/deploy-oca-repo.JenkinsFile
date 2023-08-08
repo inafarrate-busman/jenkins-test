@@ -23,6 +23,27 @@ pipeline {
     }
 
     stages {
+
+        stage("Cloning / Updating repo") {
+
+            steps {
+                script {
+                    String sourcePath = "${fromDesa == 'true' : params.DESA_OCA_PATH : destPath }"
+                    def exists = fileExists "${sourcePath}/${repoName}"
+                    if(!exists){
+                        dir("${sourcePath}"){
+                            sh 'git clone --branch ${VERSION} --depth 1 ${URL}'
+                        }
+                    }else {
+                        dir("${sourcePath}/${repoName}"){
+                            sh 'git pull'
+                        }
+                    }
+                }
+            }
+
+        }
+
         stage("Copying from DESA"){
             when {
                 expression { fromDesa == 'true' }
