@@ -19,6 +19,7 @@ pipeline {
     environment {
         repoName = params.URL.tokenize('/').last().replaceAll('.git', '')
         fromDesa = "${params.DESA_NODE != '' && params.DESA_OCA_PATH != ''}"
+        destPath = "${params.IS_TEST ? params.TEST_OCA_PATH : params.PROD_OCA_PATH}"
     }
 
     stages {
@@ -32,20 +33,25 @@ pipeline {
             }
 
             steps {
-                dir("${DESA_OCA_PATH}/${repoName}") {
-                    stash name: "${repoName}"
+                dir("${DESA_OCA_PATH}") {
+                    sh "tar -czf ${repoName}.tgz ${repoName}"
                 }
+                sh "mv ${DESA_OCA_PATH}/${repoName}.tgz ."
+                stash name:"${repoName}", includes:"${repoName}.tgz"
             }
         }
-
+        
         stage ("Paste to Node") {
             when {
                 expression { fromDesa == 'true' }
             }
             steps {
-                sh "mkdir -p ${repoName}"
-                dir("${repoName}"){
-                    unstash name: "${repoName}"
+                unstash "${repoName}"
+                sh "mv ${repoName}.tgz ${destPath}"
+                dir("${destPath}"){
+                    sh "tar -xzf ${repoName}.tgz"
+                    sh "rm ${repoName}.tgz"
+                    sh "sudo chown ${USER}:${USER} ${repoName}"
                 }
             }
         }
