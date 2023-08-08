@@ -24,31 +24,30 @@ pipeline {
     stages {
         stage("Copying from DESA"){
             when {
-                expression { fromDesa }
+                expression { fromDesa == 'true' }
             }
 
-            // agent {
-            //     label params.DESA_NODE
-            // }
+            agent {
+                label params.DESA_NODE
+            }
 
             steps {
-                // dir("${DESA_OCA_PATH}/${repoName}") {
-                //     stash name: "${repoName}"
-                // }
-                echo "${fromDesa}"
+                dir("${DESA_OCA_PATH}/${repoName}") {
+                    stash name: "${repoName}"
+                }
             }
         }
 
-        // stage ("Paste to Node") {
-        //     when {
-        //         expression { fromDesa }
-        //     }
-        //     steps {
-        //         sh "mkdir -p ${repoName}"
-        //         dir("${repoName}"){
-        //             unstash name: "${repoName}"
-        //         }
-        //     }
-        // }
+        stage ("Paste to Node") {
+            when {
+                expression { fromDesa == 'true' }
+            }
+            steps {
+                sh "mkdir -p ${repoName}"
+                dir("${repoName}"){
+                    unstash name: "${repoName}"
+                }
+            }
+        }
     }
 }
