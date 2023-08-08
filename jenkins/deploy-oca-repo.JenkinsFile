@@ -27,27 +27,28 @@ pipeline {
                 expression { fromDesa }
             }
 
-            agent {
-                label params.DESA_NODE
-            }
+            // agent {
+            //     label params.DESA_NODE
+            // }
 
             steps {
-                dir("${DESA_OCA_PATH}/${repoName}") {
-                    stash name: "${repoName}"
-                }
+                // dir("${DESA_OCA_PATH}/${repoName}") {
+                //     stash name: "${repoName}"
+                // }
+                echo "${fromDesa}"
             }
         }
 
-        stage ("Paste to Node") {
-            when {
-                expression { fromDesa }
-            }
-            steps {
-                sh "mkdir -p ${repoName}"
-                dir("${repoName}"){
-                    unstash name: "${repoName}"
-                }
-            }
-        }
+        // stage ("Paste to Node") {
+        //     when {
+        //         expression { fromDesa }
+        //     }
+        //     steps {
+        //         sh "mkdir -p ${repoName}"
+        //         dir("${repoName}"){
+        //             unstash name: "${repoName}"
+        //         }
+        //     }
+        // }
     }
 }
