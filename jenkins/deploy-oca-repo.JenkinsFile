@@ -25,10 +25,12 @@ pipeline {
     stages {
 
         stage("Cloning / Updating repo") {
-
+            when {
+                expression { UPDATE_REPO }
+            }
             steps {
                 script {
-                    String sourcePath = "${fromDesa == 'true' : params.DESA_OCA_PATH : destPath }"
+                    String sourcePath = "${fromDesa == 'true' ? params.DESA_OCA_PATH : destPath }"
                     def exists = fileExists "${sourcePath}/${repoName}"
                     if(!exists){
                         dir("${sourcePath}"){
