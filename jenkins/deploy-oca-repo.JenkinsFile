@@ -85,12 +85,14 @@ pipeline {
             }
 
             steps {
-                def exists = fileExists "${TEST_OCA_PATH}/${repoName}"
-                if(exists){
-                    sh 'rm -rf ${TEST_OCA_PATH}/${repoName}'
-                }
+                script {
+                    def exists = fileExists "${TEST_OCA_PATH}/${repoName}"
+                    if(exists){
+                        sh 'rm -rf ${TEST_OCA_PATH}/${repoName}'
+                    }
 
-                sh 'ln -s ${PROD_OCA_PATH}/${repoName} ${TEST_OCA_PATH}/'
+                    sh 'ln -s ${PROD_OCA_PATH}/${repoName} ${TEST_OCA_PATH}/'
+                }
             }
         }
     }
