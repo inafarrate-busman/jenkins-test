@@ -26,7 +26,7 @@ pipeline {
 
         stage("Cloning / Updating repo") {
             when {
-                expression { UPDATE_REPO }
+                expression { UPDATE_REPO == true }
             }
             steps {
                 script {
