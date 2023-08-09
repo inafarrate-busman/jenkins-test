@@ -65,7 +65,7 @@ pipeline {
             }
 
             steps {
-                sh "tar -czf ${repoName}.tgz -C ${repoName}"
+                sh "tar -czf ${repoName}.tgz -C ${DESA_OCA_PATH}/${repoName} ."
                 stash name:"${repoName}", includes:"${repoName}.tgz"
             }
         }
@@ -77,14 +77,12 @@ pipeline {
             steps {
                 script {
                     unstash "${repoName}"
-                    sh "mv ${repoName}.tgz ${destPath}"
                     def exists = fileExists "${destPath}/${repoName}"
                     if( exists ) {
                         sh "sudo -u ${USER} rm -rf ${destPath}/${repoName}"
                     }
-
-                    sh "tar -xzf ${repoName}.tgz -C ${destPath}"
-                    sh "rm ${repoName}.tgz"
+                    sh "mkdir ${destPath}/${repoName}"
+                    sh "sudo tar -xzf ${repoName}.tgz -C ${destPath}/${repoName}"
                     sh "sudo chown -R ${USER}:${USER} ${destPath}/${repoName}"
                 }
             }
