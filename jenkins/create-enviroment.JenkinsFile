@@ -201,7 +201,7 @@ def createConfigFile(String enviromentPath){
 }
 
 def changeConfigParams(env){
-    def addonsPath = sh(returnStdout: true, script: "python3 odoo/get-addons-path.py ${env.environmentFolder}")
+    def addonsPath = sh(returnStdout: true, script: "python3 odoo/get-addons-path.py --path=${env.environmentFolder}")
     def config = [
         addons_path: "${addonsPath.replace('\n', '')}",
         http_port: "${env.http_port}",

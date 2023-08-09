@@ -2,11 +2,19 @@ pipeline {
     
     parameters {
         string(name: 'SERVER_NAME', description: 'Nombre del servidor')
-        booleanParam(name: 'IS_TEST', defaultValue: false, description: 'Entorno de pruebas')
         string(name: 'URL', defaultValue: '', description: 'URL Git del repositorio')
-        string(name: 'TEST_OCA_PATH', defaultValue: '', description: 'Path de pruebas del los módulos de OCA')
         string(name: 'VERSION', defaultValue: '', description: 'Versión del repositorio')
+        booleanParam(name: 'IS_TEST', defaultValue: false, description: 'Entorno de pruebas')
+        string(name: 'TEST_OCA_PATH', defaultValue: '', description: 'Path de pruebas del los módulos de OCA')
+        string(name: 'TEST_DEV_PATH', defaultValue: '', description: 'Path de pruebas del los módulos propios')
+        string(name: 'TEST_THIRD_PARTY_PATH', defaultValue: '', description: 'Path de pruebas del los módulos de terceros')
+        string(name: 'TEST_ODOO_PATH', defaultValue: '', description: 'Path de pruebas de Odoo')
+        string(name: 'TEST_CONFIG_PATH', defaultValue: '', description: 'Path del fichero de configuración de pruebas')
         string(name: 'PROD_OCA_PATH', defaultValue: '', description: 'Path de producción del los módulos de OCA')
+        string(name: 'TEST_DEV_PATH', defaultValue: '', description: 'Path de producción del los módulos propios')
+        string(name: 'TEST_THIRD_PARTY_PATH', defaultValue: '', description: 'Path de producción del los módulos de terceros')
+        string(name: 'TEST_ODOO_PATH', defaultValue: '', description: 'Path de producción de Odoo')
+        string(name: 'PROD_CONFIG_PATH', defaultValue: '', description: 'Path del fichero de configuración de pruebas')
         string(name: 'DESA_NODE', defaultValue: '', description: 'Nombre del nodo del servidor DESA')
         string(name: 'DESA_OCA_PATH', defaultValue: '', description: 'Path de DESA del los módulos de OCA')
         booleanParam(name: 'UPDATE_REPO', defaultValue: false, description: 'Actualizar repositorio')
@@ -101,6 +109,39 @@ pipeline {
 
                     sh 'ln -s ${PROD_OCA_PATH}/${repoName} ${TEST_OCA_PATH}/'
                     sh "sudo chown -R ${USER}:${USER} ${TEST_OCA_PATH}/${repoName}"
+                }
+            }
+        }
+
+        stage ("Actualizar conf") {
+            steps {
+                script {
+                    def enviroments = []
+
+                    if (IS_TEST == false){
+                        environments.add([
+                            development: "${PROD_DEV_PATH}",
+                            oca: "${PROD_OCA_PATH}",
+                            third_party: "${PROD_THIRD_PARTY}",
+                            odoo: "${PROD_ODOO_PATH}",
+                            config: "${PROD_CONFIG_PATH}"
+                        ])
+                    }
+
+                    environments.add([
+                        development: "${TEST_DEV_PATH}",
+                        oca: "${TEST_OCA_PATH}",
+                        third_party: "${TEST_THIRD_PARTY}",
+                        odoo: "${TEST_ODOO_PATH}",
+                        config: "${TEST_CONFIG_PATH}"
+                    ])
+
+                    environments.each{ env -> 
+                        def addonsPath = sh(returnStdout: true, script: "python3 odoo/get-addons-path.py --odoo=${env.odoo} --dev=${env.dev} --oca=${env.oca} --third-party=${env.third_party}")
+                        def command = "python3 odoo/config.py ${env.config} addons_path=${addonsPath.replace('\n', '')}"
+                        sh command
+                    }
+
                 }
             }
         }
