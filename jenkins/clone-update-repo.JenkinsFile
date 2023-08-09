@@ -15,15 +15,28 @@ pipeline {
                     if(fileExists("${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME}")){
                         dir("${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME}") {
                             sh 'git pull'
-                            deleteDir()
                         }
                     }else {
                         dir("${ADDONS_DEVELOPMENT_PATH}") {
                             sh 'git clone --branch ${BRANCH} git@github.com:busmanapps/${REPO_NAME}'
-                            deleteDir()
                         }
                     }
                 }
+            }
+        }
+    }
+
+    post {
+        always {
+            deleteDir()
+            dir("${env.WORKSPACE}@tmp") {
+                deleteDir()
+            }
+            dir("${env.WORKSPACE}@script") {
+                deleteDir()
+            }
+            dir("${env.WORKSPACE}@script@tmp") {
+                deleteDir()
             }
         }
     }
