@@ -44,13 +44,9 @@ pipeline {
                         if(exists) {
                             sh "sudo -u ${USER} rm ${sourcePath}/${repoName}"
                         }
-                        dir("${sourcePath}"){
-                            sh 'sudo -u ${USER} git clone --branch ${VERSION} --depth 1 ${URL}'
-                        }
+                        sh "cd ${sourcePath} && sudo -u ${USER} git clone --branch ${VERSION} --depth 1 ${URL}"
                     }else {
-                        dir("${sourcePath}/${repoName}"){
-                            sh 'sudo -u ${USER} git pull'
-                        }
+                        sh "cd ${sourcePath}/${repoName} && sudo -u ${USER} git pull"
                     }
 
                     sh "sudo chown -R ${USER}:${USER} ${sourcePath}/${repoName}"
@@ -69,10 +65,7 @@ pipeline {
             }
 
             steps {
-                dir("${DESA_OCA_PATH}") {
-                    sh "tar -czf ${repoName}.tgz ${repoName}"
-                }
-                sh "mv ${DESA_OCA_PATH}/${repoName}.tgz ."
+                sh "tar -czf ${repoName}.tgz -C ${repoName}"
                 stash name:"${repoName}", includes:"${repoName}.tgz"
             }
         }
@@ -89,11 +82,10 @@ pipeline {
                     if( exists ) {
                         sh "sudo -u ${USER} rm -rf ${destPath}/${repoName}"
                     }
-                    dir("${destPath}"){
-                        sh "tar -xzf ${repoName}.tgz"
-                        sh "rm ${repoName}.tgz"
-                        sh "sudo chown -R ${USER}:${USER} ${repoName}"
-                    }
+
+                    sh "tar -xzf ${repoName}.tgz -C ${destPath}"
+                    sh "rm ${repoName}.tgz"
+                    sh "sudo chown -R ${USER}:${USER} ${destPath}/${repoName}"
                 }
             }
         }
@@ -146,6 +138,21 @@ pipeline {
                     }
 
                 }
+            }
+        }
+    }
+
+    post {
+        always {
+            deleteDir()
+            dir("${env.WORKSPACE}@tmp") {
+                deleteDir()
+            }
+            dir("${env.WORKSPACE}@script") {
+                deleteDir()
+            }
+            dir("${env.WORKSPACE}@script@tmp") {
+                deleteDir()
             }
         }
     }
