@@ -40,7 +40,11 @@ pipeline {
                 script {
                     String sourcePath = "${fromDesa == 'true' ? params.DESA_OCA_PATH : destPath }"
                     def exists = fileExists "${sourcePath}/${repoName}"
-                    if(!exists){
+                    if ()
+                    if(!exists || (exists && sh(script: "[ -L \"$directoryPath\" ]", returnStatus: true) == 0)){
+                        if(exists) {
+                            sh "sudo -u ${USER} rm ${sourcePath}/${repoName}"
+                        }
                         dir("${sourcePath}"){
                             sh 'sudo -u ${USER} git clone --branch ${VERSION} --depth 1 ${URL}'
                         }
