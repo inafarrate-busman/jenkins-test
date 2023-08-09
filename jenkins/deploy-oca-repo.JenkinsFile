@@ -137,7 +137,7 @@ pipeline {
                     ])
 
                     enviroments.each{ env -> 
-                        def addonsPath = sh(returnStdout: true, script: "python3 odoo/get-addons-path.py --odoo=${env.odoo} --dev=${env.dev} --oca=${env.oca} --third-party=${env.third_party}")
+                        def addonsPath = sh(returnStdout: true, script: "python3 odoo/get-addons-path.py --odoo=${env.odoo} --dev=${env.development} --oca=${env.oca} --third-party=${env.third_party}")
                         def command = "python3 odoo/config.py ${env.config} addons_path=${addonsPath.replace('\n', '')}"
                         sh command
                     }
