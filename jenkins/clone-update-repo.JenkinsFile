@@ -13,9 +13,9 @@ pipeline {
             steps {
                 script {
                     if(fileExists("${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME}")){
-                        sh "cd ${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME} && git pull"
+                        sh "cd ${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME} && sudo -u ${USER} git pull"
                     }else {
-                        sh 'git clone --branch ${BRANCH} git@github.com:busmanapps/${REPO_NAME} ${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME}'
+                        sh 'sudo -u ${USER} git clone --branch ${BRANCH} git@github.com:busmanapps/${REPO_NAME} ${ADDONS_DEVELOPMENT_PATH}/${REPO_NAME}'
                     }
                 }
             }
