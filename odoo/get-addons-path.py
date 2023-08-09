@@ -5,7 +5,7 @@ def get_subdirectories(path):
     subdirectories = []
     for item in os.listdir(path):
         item_path = os.path.join(path, item)
-        if os.path.isdir(item_path):
+        if os.path.isdir(item_path) and '@' not in item:
             subdirectories.append(item_path)
     return subdirectories
 
