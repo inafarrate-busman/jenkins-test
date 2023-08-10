@@ -18,7 +18,7 @@ def main():
     parser.add_argument("--third-party", help="Path of the third-party addons directory")
     args = parser.parse_args()
 
-    if args.oca or args.dev or args.odoo or args.third_party:
+    if args.path or args.oca or args.dev or args.odoo or args.third_party:
         input_path = args.path if args.path else os.getcwd()
         oca_path = args.oca if args.oca else f"{input_path}/addons/oca"
         dev_path = args.dev if args.dev else f"{input_path}/addons/addons_development"
@@ -40,7 +40,7 @@ def main():
         print(",".join(addons_path))
         return 0
     else:
-        raise Exception("At least one of the additional arguments (--oca, --dev, --odoo, --third-party) must be provided.")
+        raise Exception("At least one of the additional arguments (--oca, --dev, --odoo, --third-party, --path) must be provided.")
         return 1
     
 
