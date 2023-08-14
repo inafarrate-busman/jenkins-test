@@ -36,6 +36,11 @@ pipeline {
             when {
                 expression { params.UPDATE_REPO == true }
             }
+
+            agent {
+                label "${fromDesa == 'true' ? params.DESA_NODE : params.SERVER_NAME}"
+            }
+
             steps {
                 script {
                     String sourcePath = "${fromDesa == 'true' ? params.DESA_OCA_PATH : destPath }"
