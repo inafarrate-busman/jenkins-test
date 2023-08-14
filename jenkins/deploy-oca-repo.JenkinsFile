@@ -116,7 +116,7 @@ pipeline {
                 script {
                     def enviroments = []
 
-                    if (IS_TEST == false){
+                    if (params.IS_TEST == false){
                         enviroments.add([
                             development: "${PROD_DEV_PATH}",
                             oca: "${PROD_OCA_PATH}",
