@@ -1,11 +1,11 @@
-import os
+from os import path, listdir, getcwd
 import argparse
 
 def get_subdirectories(path):
     subdirectories = []
-    for item in os.listdir(path):
-        item_path = os.path.join(path, item)
-        if os.path.isdir(item_path) and '@' not in item:
+    for item in listdir(path):
+        item_path = path.join(path, item)
+        if path.isdir(item_path) and '@' not in item:
             subdirectories.append(item_path)
     return subdirectories
 
@@ -19,17 +19,17 @@ def main():
     args = parser.parse_args()
 
     if args.path or args.oca or args.dev or args.odoo or args.third_party:
-        input_path = args.path if args.path else os.getcwd()
+        input_path = args.path if args.path else getcwd()
         oca_path = args.oca if args.oca else f"{input_path}/addons/oca"
         dev_path = args.dev if args.dev else f"{input_path}/addons/addons_development"
         odoo_path = args.odoo if args.odoo else f"{input_path}/server"
         third_party_path = args.third_party if args.third_party else f"{input_path}/addons/third_party_addons"
-        prs_path = os.path.join(args.dev, "../prs") if args.dev else f"{input_path}/addons/prs"
+        prs_path = path.normpath(path.join(args.dev, "../prs")) if args.dev else f"{input_path}/addons/prs"
 
-        if not os.path.exists(oca_path):
+        if not path.exists(oca_path):
             return
 
-        prs_path = [prs_path] if os.path.exists(prs_path) else []
+        prs_path = [prs_path] if path.exists(prs_path) else []
 
         oca_addons_paths = get_subdirectories(oca_path)
         addons_path = [
