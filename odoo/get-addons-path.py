@@ -24,14 +24,18 @@ def main():
         dev_path = args.dev if args.dev else f"{input_path}/addons/addons_development"
         odoo_path = args.odoo if args.odoo else f"{input_path}/server"
         third_party_path = args.third_party if args.third_party else f"{input_path}/addons/third_party_addons"
+        prs_path = os.path.join(args.dev, "../prs") if args.dev else f"{input_path}/addons/prs"
 
         if not os.path.exists(oca_path):
             return
+
+        prs_path = [prs_path] if os.path.exists(prs_path) else []
 
         oca_addons_paths = get_subdirectories(oca_path)
         addons_path = [
             f"{odoo_path}/odoo/addons",
             f"{odoo_path}/addons",
+            *prs_path,
             *oca_addons_paths,
             third_party_path,
             dev_path,
