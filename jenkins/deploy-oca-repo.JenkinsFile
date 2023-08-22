@@ -145,18 +145,6 @@ pipeline {
                 }
             }
         }
-
-        stage ("Instalar requerimientos Python") {
-            steps {
-                script {
-                    if (params.IS_TEST == false){
-                        installPythonRequeriments(params.PROD_ENV_NAME, params.PROD_OCA_PATH, repoName)
-                    }
-
-                    installPythonRequeriments(params.TEST_ENV_NAME, params.TEST_OCA_PATH, repoName)
-                }
-            }
-        }
     }
 
     post {
@@ -172,19 +160,5 @@ pipeline {
                 deleteDir()
             }
         }
-    }
-}
-
-def installPythonRequeriments(String venvName, String ocaPath, String repoName){
-    def requirementsPath = "${ocaPath}/${repoName}/requirements.txt"
-    def exists = fileExists "${requirementsPath}"
-    if(!exists){
-        return
-    }
-
-    if(venvName) {
-        sh '$HOME/.pyenv/versions/${venvName}/bin/pip install -r ${requirementsPath}'
-    }else {
-        sh 'pip install -r ${requirementsPath}'
     }
 }
