@@ -1,10 +1,10 @@
 from os import path, listdir, getcwd
 import argparse
 
-def get_subdirectories(directory):
+def get_subdirectories(path):
     subdirectories = []
-    for item in listdir(directory):
-        item_path = path.join(directory, item)
+    for item in listdir(path):
+        item_path = path.join(path, item)
         if path.isdir(item_path) and '@' not in item:
             subdirectories.append(item_path)
     return subdirectories
