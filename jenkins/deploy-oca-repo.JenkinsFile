@@ -73,7 +73,7 @@ pipeline {
 
             steps {
                 sh "tar -czf ${repoName}.tgz -C ${DESA_OCA_PATH}/${repoName} ."
-                stash name:"${repoName}", includes:"${repoName}.tgz"
+                archiveArtifacts artifacts: "${repoName}.tgz", fingerprint: true
             }
         }
         
@@ -83,7 +83,7 @@ pipeline {
             }
             steps {
                 script {
-                    unstash "${repoName}"
+                    copyArtifacts filter: "${repoName}.tgz", fingerprintArtifacts: true, projectName: env.JOB_NAME, selector: specific(env.BUILD_NUMBER)
                     def exists = fileExists "${destPath}/${repoName}"
                     if( exists ) {
                         sh "sudo -u ${USER} rm -rf ${destPath}/${repoName}"
