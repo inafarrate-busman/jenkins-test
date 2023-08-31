@@ -1,0 +1,40 @@
+pipeline{
+    parameters {
+        string(name: 'SERVER_NAME', description: 'Nombre del servidor')
+        string(name: 'BASE64_FILE', description: "Fichero en Base64")
+        string(name: 'FILENAME', description: "Nombre del fichero")
+        string(name: 'DEST_PATH', defaultValue: '', description: 'Path de los módulos de terceros')
+    }
+
+    agent {
+        label params.SERVER_NAME
+    }
+
+    stages{
+        stage("Deplegando módulo"){
+            steps{
+                script {
+                    def decodedContent = "${BASE64_FILE}".decodeBase64()
+                    def file = new File("${FILENAME}")
+                    file.write(decodedContent)
+
+                    sh "sudo tar -xzf ${FILENAME} -C ${DEST_PATH}/"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            deleteDir()
+            dir("${env.WORKSPACE}@tmp") {
+                deleteDir()
+            }
+            dir("${env.WORKSPACE}@script") {
+                deleteDir()
+            }
+            dir("${env.WORKSPACE}@script@tmp") {
+                deleteDir()
+            }
+        }
+    }
+}

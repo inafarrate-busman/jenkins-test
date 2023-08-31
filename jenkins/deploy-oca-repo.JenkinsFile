@@ -183,8 +183,8 @@ def installPythonRequeriments(String venvName, String ocaPath, String repoName){
     }
 
     if(venvName) {
-        sh '$HOME/.pyenv/versions/${venvName}/bin/pip install -r ${requirementsPath}'
+        sh "$HOME/.pyenv/versions/${venvName}/bin/pip install -r ${requirementsPath}"
     }else {
-        sh 'pip install -r ${requirementsPath}'
+        sh "pip install -r ${requirementsPath}"
     }
 }
