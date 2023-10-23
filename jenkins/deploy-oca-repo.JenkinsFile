@@ -51,7 +51,7 @@ pipeline {
                         if(exists) {
                             sh "sudo -u ${USER} rm ${sourcePath}/${repoName}"
                         }
-                        sh "cd ${sourcePath} && sudo -u ${USER} git clone --branch ${VERSION} --depth 1 ${params.URL.toString()}"
+                        sh "cd ${sourcePath} && sudo -u ${USER} git clone --branch ${VERSION} --depth 1 ${params.URL}"
                     }else {
                         sh "cd ${sourcePath}/${repoName} && sudo -u ${USER} git pull"
                     }
