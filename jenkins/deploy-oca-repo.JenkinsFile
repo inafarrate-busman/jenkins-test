@@ -53,7 +53,7 @@ pipeline {
                         }
                         sh "cd ${sourcePath} && sudo -u ${USER} git clone --branch ${VERSION} --depth 1 ${params.URL}"
                     }else {
-                        sh "cd ${sourcePath}/${repoName} && sudo -u ${USER} git pull"
+                        sh "cd ${sourcePath}/${repoName} && sudo -u ${USER} git reset --hard HEAD && sudo -u ${USER} git clean -df && sudo -u ${USER} git pull --force"
                     }
 
                     sh "sudo chown -R ${USER}:${USER} ${sourcePath}/${repoName}"
