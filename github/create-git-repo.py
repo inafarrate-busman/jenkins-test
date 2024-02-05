@@ -19,5 +19,5 @@ version = args.version
 if not token or not module or not owner:
     parser.error('No se han establecido los parámetros requeridos.')
 
-create_repo(token, module, owner, is_org)
+# create_repo(token, module, owner, is_org)
 update_manifest_file(token, module, owner, version)

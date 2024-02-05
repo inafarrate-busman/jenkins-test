@@ -1,15 +1,19 @@
+from typing import Any
 import requests
 import json
 import re
+import ast
+import base64
 
 GITHUB_BASE_URL = "https://api.github.com"
 TEMPLATE_OWNER = "busmanapps"
 TEMPLATE_REPO = "busman_odoo_module_template"
 
 def create_repo(token, module, owner, is_org = True):
-    url = "%(base_url)s/%(user_uri)s/repos" % {
+    url = "%(base_url)s/repos/%(template_owner)s/%(template_repo)s/generate" % {
         'base_url': GITHUB_BASE_URL,
-        'user_uri': f'orgs/{owner}' if is_org else 'user',
+        'template_owner': TEMPLATE_OWNER,
+        'template_repo': TEMPLATE_REPO
     }
 
     headers = {
@@ -19,11 +23,9 @@ def create_repo(token, module, owner, is_org = True):
     }
 
     body = {
+        'owner': TEMPLATE_OWNER,
         'name': module.lower(),
-        'gitignore_template': 'Python',
         'private': True,
-        "template_owner": TEMPLATE_OWNER,
-        "template_repo": TEMPLATE_REPO
     }
 
     response = requests.post(url, headers=headers, data=json.dumps(body))
@@ -128,22 +130,21 @@ def get_manifest_dict(token, module, owner):
         'Accept': 'application/vnd.github.v3.raw'
     }
 
-    url = f'https://raw.githubusercontent.com/{owner}/{module}/main/__manifest__.py'
+    url = f'https://api.github.com/repos/{owner}/{module}/contents/__manifest__.py'
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
-        manifest_content = response.text
-        manifest_dict = {}
-
+        data = response.text
+        sha = response.headers['ETag'].strip('"')
         # Ejecutar el código Python y obtener el diccionario resultante
-        exec(manifest_content, manifest_dict)
+        manifest_dict = ast.literal_eval(data)
 
-        return manifest_dict
+        return manifest_dict, sha
     else:
         raise Exception(f"Error al obtener el contenido del archivo. Código de estado: {response.status_code}")
 
 def update_manifest_file(token, module, owner, version):
-    manifest_dict = get_manifest_dict(token, module, owner)
+    manifest_dict, sha = get_manifest_dict(token, module, owner)
 
     headers = {
         'Authorization': f'token {token}',
@@ -155,12 +156,18 @@ def update_manifest_file(token, module, owner, version):
         'name': module
     })
 
+
+
+    manifest_str = json.dumps(manifest_dict, indent=4)\
+        .replace('false', 'False')\
+        .replace('true', 'True')
+
     # Actualizar el contenido del archivo en GitHub
     update_url = f'https://api.github.com/repos/{owner}/{module}/contents/__manifest__.py'
     update_data = {
         'message': f'Actualizar Manifest',
-        'content': str(manifest_dict),
-        'sha': manifest_dict.get('sha', '')  # Asegúrate de que el diccionario contenga el sha
+        'content': base64.b64encode(manifest_str.encode('utf-8')).decode('utf-8'),
+        'sha': sha
     }
 
     update_response = requests.put(update_url, headers=headers, json=update_data)
