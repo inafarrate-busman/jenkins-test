@@ -3,6 +3,8 @@ import json
 import re
 
 GITHUB_BASE_URL = "https://api.github.com"
+TEMPLATE_OWNER = "busmanapps"
+TEMPLATE_REPO = "busman_odoo_module_template"
 
 def create_repo(token, module, owner, is_org = True):
     url = "%(base_url)s/%(user_uri)s/repos" % {
@@ -19,7 +21,9 @@ def create_repo(token, module, owner, is_org = True):
     body = {
         'name': module.lower(),
         'gitignore_template': 'Python',
-        'private': True
+        'private': True,
+        "template_owner": TEMPLATE_OWNER,
+        "template_repo": TEMPLATE_REPO
     }
 
     response = requests.post(url, headers=headers, data=json.dumps(body))
@@ -117,3 +121,4 @@ def check_brach_name(branch_name):
 
     if not match:
         raise Exception(f"La rama {branch_name} no es válida.")
+
