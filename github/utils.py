@@ -1,4 +1,3 @@
-from typing import Any
 import requests
 import json
 import re
@@ -124,7 +123,7 @@ def check_brach_name(branch_name):
     if not match:
         raise Exception(f"La rama {branch_name} no es válida.")
     
-def get_manifest_dict(token, module, owner):
+def _get_manifest_dict(token, module, owner):
     headers = {
         'Authorization': f'token {token}',
         'Accept': 'application/vnd.github.v3.raw'
@@ -143,17 +142,19 @@ def get_manifest_dict(token, module, owner):
     else:
         raise Exception(f"Error al obtener el contenido del archivo. Código de estado: {response.status_code}")
 
-def update_manifest_file(token, module, owner, version):
-    manifest_dict, sha = get_manifest_dict(token, module, owner)
+def update_manifest_file(token: str, module: str, owner: str, version: str):
+    manifest_dict, sha = _get_manifest_dict(token, module, owner)
 
     headers = {
         'Authorization': f'token {token}',
         'Accept': 'application/vnd.github.v3+json'
     }
 
+    module_name = ' '.join([name.capitalize() for name in module.split('_')])
+
     manifest_dict.update({
         'version': f"{version}.1.0.0",
-        'name': module
+        'name': module_name
     })
 
 

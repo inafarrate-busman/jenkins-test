@@ -1,4 +1,5 @@
 import argparse
+import time
 
 from utils import create_repo, update_manifest_file
 
@@ -19,5 +20,8 @@ version = args.version
 if not token or not module or not owner:
     parser.error('No se han establecido los parámetros requeridos.')
 
-# create_repo(token, module, owner, is_org)
+create_repo(token, module, owner, is_org)
+
+time.sleep(3) # Espera para que cree el repo y así encuentre el archivo __manifest__.py
+
 update_manifest_file(token, module, owner, version)
