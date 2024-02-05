@@ -121,4 +121,49 @@ def check_brach_name(branch_name):
 
     if not match:
         raise Exception(f"La rama {branch_name} no es válida.")
+    
+def get_manifest_dict(token, module, owner):
+    headers = {
+        'Authorization': f'token {token}',
+        'Accept': 'application/vnd.github.v3.raw'
+    }
 
+    url = f'https://raw.githubusercontent.com/{owner}/{module}/main/__manifest__.py'
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        manifest_content = response.text
+        manifest_dict = {}
+
+        # Ejecutar el código Python y obtener el diccionario resultante
+        exec(manifest_content, manifest_dict)
+
+        return manifest_dict
+    else:
+        raise Exception(f"Error al obtener el contenido del archivo. Código de estado: {response.status_code}")
+
+def update_manifest_file(token, module, owner, version):
+    manifest_dict = get_manifest_dict(token, module, owner)
+
+    headers = {
+        'Authorization': f'token {token}',
+        'Accept': 'application/vnd.github.v3+json'
+    }
+
+    manifest_dict.update({
+        'version': f"{version}.1.0.0",
+        'name': module
+    })
+
+    # Actualizar el contenido del archivo en GitHub
+    update_url = f'https://api.github.com/repos/{owner}/{module}/contents/__manifest__.py'
+    update_data = {
+        'message': f'Actualizar Manifest',
+        'content': str(manifest_dict),
+        'sha': manifest_dict.get('sha', '')  # Asegúrate de que el diccionario contenga el sha
+    }
+
+    update_response = requests.put(update_url, headers=headers, json=update_data)
+
+    if update_response.status_code != 200:
+        raise Exception(f"Error al actualizar el archivo. Código de estado: {update_response.status_code}")
