@@ -25,14 +25,16 @@ def main():
         odoo_path = args.odoo if args.odoo else f"{input_path}/server"
         third_party_path = args.third_party if args.third_party else f"{input_path}/addons/third_party_addons"
         prs_path = path.normpath(path.join(args.dev, "../prs")) if args.dev else f"{input_path}/addons/prs"
+        override_path = path.normpath(path.join(args.dev, "../override")) if args.dev else f"{input_path}/addons/override"
 
         if not path.exists(oca_path):
             return
 
         prs_path = [prs_path] if path.exists(prs_path) else []
-
+        override_path = [override_path] if path.exists(override_path) else []
         oca_addons_paths = get_subdirectories(oca_path)
         addons_path = [
+            *override_path,
             f"{odoo_path}/odoo/addons",
             f"{odoo_path}/addons",
             *prs_path,
